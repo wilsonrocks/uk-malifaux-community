@@ -156,7 +156,10 @@ export const lists = {
       },
     },
     fields: {
-      name: text(),
+      name: text({
+        validation: { isRequired: true },
+        isIndexed: "unique",
+      }),
       organiser: relationship({
         ref: "User.events",
         many: false,
