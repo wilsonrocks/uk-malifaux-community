@@ -17,26 +17,8 @@ model User {
   level     String    @default("HENCHMAN")
   email     String    @unique @default("")
   password  String
-  posts     Post[]    @relation("Post_author")
   createdAt DateTime? @default(now())
   events    Event[]   @relation("Event_organiser")
-}
-
-model Post {
-  id       String  @id @default(cuid())
-  title    String  @default("")
-  content  String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
-  author   User?   @relation("Post_author", fields: [authorId], references: [id])
-  authorId String? @map("author")
-  tags     Tag[]   @relation("Post_tags")
-
-  @@index([authorId])
-}
-
-model Tag {
-  id    String @id @default(cuid())
-  name  String @default("")
-  posts Post[] @relation("Post_tags")
 }
 
 model Event {
@@ -45,7 +27,9 @@ model Event {
   organiser   User?   @relation("Event_organiser", fields: [organiserId], references: [id])
   organiserId String? @map("organiser")
   venueName   String  @default("")
-  date        String?
+  date        String
+  cost        Float?
+  howToPay    String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
 
   @@index([organiserId])
   @@index([date])

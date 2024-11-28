@@ -17,6 +17,8 @@ import {
   timestamp,
   select,
   calendarDay,
+  decimal,
+  float,
 } from "@keystone-6/core/fields";
 
 // the document field is a more complicated field, so it has it's own package
@@ -34,12 +36,19 @@ const isLevel =
   ({ session }: any) =>
     session.data.level === levelString;
 
+const isNotLevel =
+  (levelString: string) =>
+  (
+    levelString: string // TODO pull this out of the options enum
+  ) =>
+  ({ session }: any) =>
+    session.data.level !== levelString;
+
 const isMasterOrSameUser = ({ session }: any) => {
   const {
     itemId,
     data: { id },
   } = session;
-  console.log(itemId, id, session);
   return isLevel("MASTER")({ session }) || session.itemId === session.data.id;
 };
 
@@ -51,13 +60,13 @@ export const lists = {
     //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
     access: {
       operation: {
-        create: isMasterOrSameUser,
+        create: isLevel("MASTER"),
         update: isMasterOrSameUser,
-        delete: isMasterOrSameUser,
-        query: isMasterOrSameUser,
+        delete: isLevel("MASTER"),
+        query: () => true,
       },
       filter: {
-        query: ({ session }: any) => {
+        query: ({ session, context }: any) => {
           if (session.data.level === "MASTER") return {};
           return { id: { equals: session.data.id } };
         },
@@ -79,6 +88,27 @@ export const lists = {
         defaultValue: "HENCHMAN",
         db: { isNullable: false },
         validation: { isRequired: true },
+        access: {
+          read: isLevel("MASTER"),
+          update: isLevel("MASTER"),
+          create: ({ session, context }) => {
+            return isLevel("MASTER")({ session });
+          },
+        },
+        ui: {
+          createView: {
+            fieldMode: ({ session }: any) => {
+              if (isLevel("MASTER")({ session })) return "edit";
+              return "hidden";
+            },
+          },
+          itemView: {
+            fieldMode: ({ session }: any) => {
+              if (isLevel("MASTER")({ session })) return "edit";
+              return "hidden";
+            },
+          },
+        },
       }),
       email: text({
         validation: { isRequired: true },
@@ -89,10 +119,6 @@ export const lists = {
 
       password: password({ validation: { isRequired: true } }),
 
-      // we can use this field to see what Posts this User has authored
-      //   more on that in the Post list below
-      posts: relationship({ ref: "Post.author", many: true }),
-
       createdAt: timestamp({
         // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: "now" },
@@ -101,110 +127,62 @@ export const lists = {
     },
   }),
 
-  Post: list({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: allowAll,
-
-    // this is the fields for our Post list
-    fields: {
-      title: text({ validation: { isRequired: true } }),
-
-      // the document field can be used for making rich editable content
-      //   you can find out more at https://keystonejs.com/docs/guides/document-fields
-      content: document({
-        formatting: true,
-        layouts: [
-          [1, 1],
-          [1, 1, 1],
-          [2, 1],
-          [1, 2],
-          [1, 2, 1],
-        ],
-        links: true,
-        dividers: true,
-      }),
-
-      // with this field, you can set a User as the author for a Post
-      author: relationship({
-        // we could have used 'User', but then the relationship would only be 1-way
-        ref: "User.posts",
-
-        // this is some customisations for changing how this will look in the AdminUI
-        ui: {
-          displayMode: "cards",
-          cardFields: ["name", "email"],
-          inlineEdit: { fields: ["name", "email"] },
-          linkToItem: true,
-          inlineConnect: true,
-        },
-
-        // a Post can only have one author
-        //   this is the default, but we show it here for verbosity
-        many: false,
-      }),
-
-      // with this field, you can add some Tags to Posts
-      tags: relationship({
-        // we could have used 'Tag', but then the relationship would only be 1-way
-        ref: "Tag.posts",
-
-        // a Post can have many Tags, not just one
-        many: true,
-
-        // this is some customisations for changing how this will look in the AdminUI
-        ui: {
-          displayMode: "cards",
-          cardFields: ["name"],
-          inlineEdit: { fields: ["name"] },
-          linkToItem: true,
-          inlineConnect: true,
-          inlineCreate: { fields: ["name"] },
-        },
-      }),
-    },
-  }),
-
-  // this last list is our Tag list, it only has a name field for now
-  Tag: list({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
-    access: allowAll,
-
-    // setting this to isHidden for the user interface prevents this list being visible in the Admin UI
-    ui: {
-      isHidden: true,
-    },
-
-    // this is the fields for our Tag list
-    fields: {
-      name: text(),
-      // this can be helpful to find out all the Posts associated with a Tag
-      posts: relationship({ ref: "Post.tags", many: true }),
-    },
-  }),
-
   Event: list({
-    access: allowAll,
+    access: {
+      operation: {
+        create: isLevel("MASTER"),
+        update: isMasterOrSameUser,
+        delete: isLevel("MASTER"),
+        query: () => true,
+      },
+      filter: {
+        query: ({ session, context: { query } }: any) => {
+          console.log({ session, query });
+          if (session.data.level === "MASTER") return {};
+          return { organiser: { id: { equals: session.data.id } } };
+        },
+      },
+    },
+    hooks: {
+      // Automatically set the logged-in user as the author on create
+      resolveInput: async ({ resolvedData, context, operation }) => {
+        if (operation === "create") {
+          return {
+            ...resolvedData,
+            organiser: { connect: { id: context.session?.data.id } },
+          };
+        }
+        return resolvedData;
+      },
+    },
     fields: {
       name: text(),
       organiser: relationship({
         ref: "User.events",
         many: false,
         ui: {
-          displayMode: "cards",
-          cardFields: ["name", "email"],
-          inlineEdit: { fields: ["name", "email"] },
-          linkToItem: true,
-          inlineConnect: true,
+          hideCreate: true,
+          itemView: { fieldMode: "hidden" },
+          createView: { fieldMode: "hidden" },
+          listView: {
+            fieldMode: ({ session }) => {
+              if (isLevel("MASTER")({ session })) return "read";
+              return "hidden";
+            },
+          },
         },
       }),
       venueName: text(),
-      date: calendarDay({ isIndexed: true }),
+      date: calendarDay({
+        isIndexed: true,
+        validation: { isRequired: true },
+        db: { isNullable: false },
+      }),
+      cost: float({
+        validation: { min: 0 },
+        ui: { description: 'Will show "tbc" if left blank' },
+      }),
+      howToPay: document({ formatting: true }),
     },
   }),
 } satisfies Lists;
