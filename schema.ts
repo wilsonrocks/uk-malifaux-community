@@ -209,7 +209,10 @@ export const lists = {
           },
         },
       }),
-      venueName: text(),
+      venue: relationship({
+        ref: "Venue",
+        many: false,
+      }),
       description: document(),
       date: calendarDay({
         isIndexed: true,
@@ -222,7 +225,7 @@ export const lists = {
       howToPay: document({ formatting: true }),
       swagDescription: document({ formatting: true }),
       swagImages: cloudinaryImage(cloudinaryConfig),
-
+      attendees: document(),
       ...group({
         label: "After The Event",
         fields: {
@@ -271,6 +274,52 @@ export const lists = {
           postCode: text(),
         },
       }),
+    },
+  }),
+
+  Team: list({
+    access: {
+      operation: {
+        // TODO should this be enforcer
+        create: isLevel("MASTER"),
+        update: isMasterOrSameUser,
+        delete: isLevel("MASTER"),
+        query: () => true,
+      },
+      filter: {
+        query: ({ session, context: { query } }: any) => {
+          if (session.data.level === "MASTER") return {};
+          return { organiser: { id: { equals: session.data.id } } };
+        },
+      },
+    },
+    hooks: {
+      // Automatically set the logged-in user as the author on create
+      resolveInput: async ({ resolvedData, context, operation }) => {
+        if (operation === "create") {
+          return {
+            ...resolvedData,
+            organiser: { connect: { id: context.session?.data.id } },
+          };
+        }
+        return resolvedData;
+      },
+    },
+    fields: {
+      name: text(),
+      location: text(),
+      captain: text(),
+      logo: cloudinaryImage(cloudinaryConfig),
+      description: document(),
+      ...group({
+        label: "Contact",
+        fields: {
+          discord: text(),
+          facebook: text(),
+          email: text(),
+        },
+      }),
+      members: document(),
     },
   }),
 } satisfies Lists;

@@ -167,13 +167,14 @@ type Event {
   name: String
   level: String
   organiser: User
-  venueName: String
+  venue: Venue
   description: Event_description_Document
   date: CalendarDay
   cost: Float
   howToPay: Event_howToPay_Document
   swagDescription: Event_swagDescription_Document
   swagImages: CloudinaryImage_File
+  attendees: Event_attendees_Document
   winnerName: String
   winnerPhoto: CloudinaryImage_File
   secondName: String
@@ -250,6 +251,10 @@ input CloudinaryImageFormat {
   transformation: String
 }
 
+type Event_attendees_Document {
+  document(hydrateRelationships: Boolean! = false): JSON!
+}
+
 input EventWhereUniqueInput {
   id: ID
   name: String
@@ -263,7 +268,7 @@ input EventWhereInput {
   name: StringFilter
   level: StringFilter
   organiser: UserWhereInput
-  venueName: StringFilter
+  venue: VenueWhereInput
   date: CalendarDayNullableFilter
   cost: FloatNullableFilter
   winnerName: StringFilter
@@ -300,7 +305,6 @@ input EventOrderByInput {
   id: OrderDirection
   name: OrderDirection
   level: OrderDirection
-  venueName: OrderDirection
   date: OrderDirection
   cost: OrderDirection
   winnerName: OrderDirection
@@ -315,13 +319,14 @@ input EventUpdateInput {
   name: String
   level: String
   organiser: UserRelateToOneForUpdateInput
-  venueName: String
+  venue: VenueRelateToOneForUpdateInput
   description: JSON
   date: CalendarDay
   cost: Float
   howToPay: JSON
   swagDescription: JSON
   swagImages: Upload
+  attendees: JSON
   winnerName: String
   winnerPhoto: Upload
   secondName: String
@@ -342,6 +347,12 @@ input UserRelateToOneForUpdateInput {
   disconnect: Boolean
 }
 
+input VenueRelateToOneForUpdateInput {
+  create: VenueCreateInput
+  connect: VenueWhereUniqueInput
+  disconnect: Boolean
+}
+
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
 
@@ -354,13 +365,14 @@ input EventCreateInput {
   name: String
   level: String
   organiser: UserRelateToOneForCreateInput
-  venueName: String
+  venue: VenueRelateToOneForCreateInput
   description: JSON
   date: CalendarDay
   cost: Float
   howToPay: JSON
   swagDescription: JSON
   swagImages: Upload
+  attendees: JSON
   winnerName: String
   winnerPhoto: Upload
   secondName: String
@@ -378,6 +390,11 @@ input EventCreateInput {
 input UserRelateToOneForCreateInput {
   create: UserCreateInput
   connect: UserWhereUniqueInput
+}
+
+input VenueRelateToOneForCreateInput {
+  create: VenueCreateInput
+  connect: VenueWhereUniqueInput
 }
 
 type Venue {

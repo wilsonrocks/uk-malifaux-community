@@ -29,13 +29,15 @@ model Event {
   level            String  @default("STANDARD")
   organiser        User?   @relation("Event_organiser", fields: [organiserId], references: [id])
   organiserId      String? @map("organiser")
-  venueName        String  @default("")
+  venue            Venue?  @relation("Event_venue", fields: [venueId], references: [id])
+  venueId          String? @map("venue")
   description      String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
   date             String?
   cost             Float?
   howToPay         String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
   swagDescription  String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
   swagImages       String?
+  attendees        String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
   winnerName       String  @default("")
   winnerPhoto      String?
   secondName       String  @default("")
@@ -50,18 +52,20 @@ model Event {
   bestSportPhoto   String?
 
   @@index([organiserId])
+  @@index([venueId])
   @@index([date])
 }
 
 model Venue {
-  id         String  @id @default(cuid())
-  name       String  @default("")
-  flgs       Boolean @default(false)
-  url        String  @default("")
-  facebook   String  @default("")
-  instagram  String  @default("")
-  firstLine  String  @default("")
-  secondLine String  @default("")
-  city       String  @default("")
-  postCode   String  @default("")
+  id               String  @id @default(cuid())
+  name             String  @default("")
+  flgs             Boolean @default(false)
+  url              String  @default("")
+  facebook         String  @default("")
+  instagram        String  @default("")
+  firstLine        String  @default("")
+  secondLine       String  @default("")
+  city             String  @default("")
+  postCode         String  @default("")
+  from_Event_venue Event[] @relation("Event_venue")
 }
