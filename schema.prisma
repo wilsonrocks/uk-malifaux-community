@@ -12,25 +12,56 @@ generator client {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String    @default("")
-  level     String    @default("HENCHMAN")
-  email     String    @unique @default("")
-  password  String
-  createdAt DateTime? @default(now())
-  events    Event[]   @relation("Event_organiser")
+  id              String    @id @default(cuid())
+  name            String    @default("")
+  level           String    @default("HENCHMAN")
+  email           String    @unique @default("")
+  password        String
+  createdAt       DateTime? @default(now())
+  discordUsername String    @default("")
+  publicEmail     String    @default("")
+  events          Event[]   @relation("Event_organiser")
 }
 
 model Event {
-  id          String  @id @default(cuid())
-  name        String  @default("")
-  organiser   User?   @relation("Event_organiser", fields: [organiserId], references: [id])
-  organiserId String? @map("organiser")
-  venueName   String  @default("")
-  date        String
-  cost        Float?
-  howToPay    String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+  id               String  @id @default(cuid())
+  name             String  @unique @default("")
+  level            String  @default("STANDARD")
+  organiser        User?   @relation("Event_organiser", fields: [organiserId], references: [id])
+  organiserId      String? @map("organiser")
+  venueName        String  @default("")
+  description      String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+  date             String?
+  cost             Float?
+  howToPay         String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+  swagDescription  String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+  swagImages       String?
+  winnerName       String  @default("")
+  winnerPhoto      String?
+  secondName       String  @default("")
+  secondPhoto      String?
+  thirdName        String  @default("")
+  thirdPhoto       String?
+  woodenSpoonName  String  @default("")
+  woodenSpoonPhoto String?
+  bestPaintedName  String  @default("")
+  bestPaintedPhoto String?
+  bestSportName    String  @default("")
+  bestSportPhoto   String?
 
   @@index([organiserId])
   @@index([date])
+}
+
+model Venue {
+  id         String  @id @default(cuid())
+  name       String  @default("")
+  flgs       Boolean @default(false)
+  url        String  @default("")
+  facebook   String  @default("")
+  instagram  String  @default("")
+  firstLine  String  @default("")
+  secondLine String  @default("")
+  city       String  @default("")
+  postCode   String  @default("")
 }

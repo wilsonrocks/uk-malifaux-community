@@ -5,7 +5,7 @@
 // If you want to learn more about how lists are configured, please read
 // - https://keystonejs.com/docs/config/lists
 
-import { list } from "@keystone-6/core";
+import { group, list } from "@keystone-6/core";
 import { allowAll } from "@keystone-6/core/access";
 
 // see https://keystonejs.com/docs/fields/overview for the full list of fields
@@ -19,6 +19,7 @@ import {
   calendarDay,
   decimal,
   float,
+  checkbox,
 } from "@keystone-6/core/fields";
 
 // the document field is a more complicated field, so it has it's own package
@@ -28,13 +29,8 @@ import { document } from "@keystone-6/fields-document";
 // when using Typescript, you can refine your types to a stricter subset by importing
 // the generated types from '.keystone/types'
 import { type Lists } from ".keystone/types";
-
-const isLevel =
-  (
-    levelString: string // TODO pull this out of the options enum
-  ) =>
-  ({ session }: any) =>
-    session.data.level === levelString;
+import { cloudinaryImage } from "@keystone-6/cloudinary";
+import { cloudinaryConfig } from "./config";
 
 const isNotLevel =
   (levelString: string) =>
@@ -44,7 +40,14 @@ const isNotLevel =
   ({ session }: any) =>
     session.data.level !== levelString;
 
-const isMasterOrSameUser = ({ session }: any) => {
+const isLevel =
+  (
+    levelString: string // TODO pull this out of the options enum
+  ) =>
+  ({ session }: any) =>
+    session.data.level === levelString;
+
+const isMasterOrSameUser = ({ session }: any): boolean => {
   const {
     itemId,
     data: { id },
@@ -115,6 +118,10 @@ export const lists = {
         // by adding isIndexed: 'unique', we're saying that no user can have the same
         // email as another user - this may or may not be a good idea for your project
         isIndexed: "unique",
+        ui: {
+          description:
+            "This is not public, it's just used to login to this site",
+        },
       }),
 
       password: password({ validation: { isRequired: true } }),
@@ -123,7 +130,26 @@ export const lists = {
         // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: "now" },
       }),
-      events: relationship({ ref: "Event.organiser", many: true }),
+
+      ...group({
+        label: "Public Contact Info",
+        description:
+          "This will be added as contact info on any events you create. It's recommended to add at least one way of contacting you!",
+        fields: {
+          discordUsername: text({
+            ui: {
+              description: "Your username on the UK Malifaux Discord Server",
+            },
+          }),
+          publicEmail: text({}),
+        },
+      }),
+
+      events: relationship({
+        ref: "Event.organiser",
+        many: true,
+        ui: { itemView: { fieldMode: "hidden" } },
+      }),
     },
   }),
 
@@ -137,7 +163,6 @@ export const lists = {
       },
       filter: {
         query: ({ session, context: { query } }: any) => {
-          console.log({ session, query });
           if (session.data.level === "MASTER") return {};
           return { organiser: { id: { equals: session.data.id } } };
         },
@@ -160,6 +185,15 @@ export const lists = {
         validation: { isRequired: true },
         isIndexed: "unique",
       }),
+      level: select({
+        options: [
+          { label: "Standard", value: "STANDARD" },
+          { label: "GT", value: "GT" },
+          { label: "Nationals", value: "NATIONALS" },
+        ],
+        validation: { isRequired: true },
+        defaultValue: "STANDARD",
+      }),
       organiser: relationship({
         ref: "User.events",
         many: false,
@@ -176,16 +210,67 @@ export const lists = {
         },
       }),
       venueName: text(),
+      description: document(),
       date: calendarDay({
         isIndexed: true,
-        validation: { isRequired: true },
-        db: { isNullable: false },
+        ui: { description: 'Will show "tbc" if left blank' },
       }),
       cost: float({
         validation: { min: 0 },
         ui: { description: 'Will show "tbc" if left blank' },
       }),
       howToPay: document({ formatting: true }),
+      swagDescription: document({ formatting: true }),
+      swagImages: cloudinaryImage(cloudinaryConfig),
+
+      ...group({
+        label: "After The Event",
+        fields: {
+          winnerName: text(),
+          winnerPhoto: cloudinaryImage(cloudinaryConfig),
+          secondName: text(),
+          secondPhoto: cloudinaryImage(cloudinaryConfig),
+          thirdName: text(),
+          thirdPhoto: cloudinaryImage(cloudinaryConfig),
+          woodenSpoonName: text(),
+          woodenSpoonPhoto: cloudinaryImage(cloudinaryConfig),
+          bestPaintedName: text(),
+          bestPaintedPhoto: cloudinaryImage(cloudinaryConfig),
+          bestSportName: text(),
+          bestSportPhoto: cloudinaryImage(cloudinaryConfig),
+        },
+      }),
+    },
+  }),
+
+  Venue: list({
+    ui: {
+      listView: {
+        initialColumns: ["name", "city", "flgs"],
+        initialSort: { field: "name", direction: "ASC" },
+      },
+    },
+    access: allowAll,
+    fields: {
+      name: text({ validation: { isRequired: true } }),
+      flgs: checkbox({
+        label: "Friendly Local Game Store",
+        ui: {
+          description: "Future feature: map of FLGSs where Malifaux is played",
+        },
+      }),
+      url: text(),
+      facebook: text(),
+      instagram: text(),
+      ...group({
+        label: "Address",
+        fields: {
+          firstLine: text(),
+          secondLine: text(),
+          city: text(),
+          postCode: text(),
+        },
+      }),
     },
   }),
 } satisfies Lists;

@@ -8,6 +8,8 @@ type User {
   email: String
   password: PasswordState
   createdAt: DateTime
+  discordUsername: String
+  publicEmail: String
   events(where: EventWhereInput! = {}, orderBy: [EventOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EventWhereUniqueInput): [Event!]
   eventsCount(where: EventWhereInput! = {}): Int
 }
@@ -38,6 +40,8 @@ input UserWhereInput {
   level: UserLevelTypeNullableFilter
   email: StringFilter
   createdAt: DateTimeNullableFilter
+  discordUsername: StringFilter
+  publicEmail: StringFilter
   events: EventManyRelationFilter
 }
 
@@ -110,6 +114,8 @@ input UserOrderByInput {
   level: OrderDirection
   email: OrderDirection
   createdAt: OrderDirection
+  discordUsername: OrderDirection
+  publicEmail: OrderDirection
 }
 
 enum OrderDirection {
@@ -123,6 +129,8 @@ input UserUpdateInput {
   email: String
   password: String
   createdAt: DateTime
+  discordUsername: String
+  publicEmail: String
   events: EventRelateToManyForUpdateInput
 }
 
@@ -144,6 +152,8 @@ input UserCreateInput {
   email: String
   password: String
   createdAt: DateTime
+  discordUsername: String
+  publicEmail: String
   events: EventRelateToManyForCreateInput
 }
 
@@ -155,11 +165,31 @@ input EventRelateToManyForCreateInput {
 type Event {
   id: ID!
   name: String
+  level: String
   organiser: User
   venueName: String
+  description: Event_description_Document
   date: CalendarDay
   cost: Float
   howToPay: Event_howToPay_Document
+  swagDescription: Event_swagDescription_Document
+  swagImages: CloudinaryImage_File
+  winnerName: String
+  winnerPhoto: CloudinaryImage_File
+  secondName: String
+  secondPhoto: CloudinaryImage_File
+  thirdName: String
+  thirdPhoto: CloudinaryImage_File
+  woodenSpoonName: String
+  woodenSpoonPhoto: CloudinaryImage_File
+  bestPaintedName: String
+  bestPaintedPhoto: CloudinaryImage_File
+  bestSportName: String
+  bestSportPhoto: CloudinaryImage_File
+}
+
+type Event_description_Document {
+  document(hydrateRelationships: Boolean! = false): JSON!
 }
 
 scalar CalendarDay @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
@@ -168,8 +198,61 @@ type Event_howToPay_Document {
   document(hydrateRelationships: Boolean! = false): JSON!
 }
 
+type Event_swagDescription_Document {
+  document(hydrateRelationships: Boolean! = false): JSON!
+}
+
+type CloudinaryImage_File {
+  id: ID
+  filename: String
+  originalFilename: String
+  mimetype: String
+  encoding: String
+  publicUrl: String
+  publicUrlTransformed(transformation: CloudinaryImageFormat): String
+}
+
+"""
+Mirrors the formatting options [Cloudinary provides](https://cloudinary.com/documentation/image_transformation_reference).
+All options are strings as they ultimately end up in a URL.
+"""
+input CloudinaryImageFormat {
+  """ Rewrites the filename to be this pretty string. Do not include `/` or `.`
+  """
+  prettyName: String
+  width: String
+  height: String
+  crop: String
+  aspect_ratio: String
+  gravity: String
+  zoom: String
+  x: String
+  y: String
+  format: String
+  fetch_format: String
+  quality: String
+  radius: String
+  angle: String
+  effect: String
+  opacity: String
+  border: String
+  background: String
+  overlay: String
+  underlay: String
+  default_image: String
+  delay: String
+  color: String
+  color_space: String
+  dpr: String
+  page: String
+  density: String
+  flags: String
+  transformation: String
+}
+
 input EventWhereUniqueInput {
   id: ID
+  name: String
 }
 
 input EventWhereInput {
@@ -178,13 +261,20 @@ input EventWhereInput {
   NOT: [EventWhereInput!]
   id: IDFilter
   name: StringFilter
+  level: StringFilter
   organiser: UserWhereInput
   venueName: StringFilter
-  date: CalendarDayFilter
+  date: CalendarDayNullableFilter
   cost: FloatNullableFilter
+  winnerName: StringFilter
+  secondName: StringFilter
+  thirdName: StringFilter
+  woodenSpoonName: StringFilter
+  bestPaintedName: StringFilter
+  bestSportName: StringFilter
 }
 
-input CalendarDayFilter {
+input CalendarDayNullableFilter {
   equals: CalendarDay
   in: [CalendarDay!]
   notIn: [CalendarDay!]
@@ -192,7 +282,7 @@ input CalendarDayFilter {
   lte: CalendarDay
   gt: CalendarDay
   gte: CalendarDay
-  not: CalendarDayFilter
+  not: CalendarDayNullableFilter
 }
 
 input FloatNullableFilter {
@@ -209,18 +299,41 @@ input FloatNullableFilter {
 input EventOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  level: OrderDirection
   venueName: OrderDirection
   date: OrderDirection
   cost: OrderDirection
+  winnerName: OrderDirection
+  secondName: OrderDirection
+  thirdName: OrderDirection
+  woodenSpoonName: OrderDirection
+  bestPaintedName: OrderDirection
+  bestSportName: OrderDirection
 }
 
 input EventUpdateInput {
   name: String
+  level: String
   organiser: UserRelateToOneForUpdateInput
   venueName: String
+  description: JSON
   date: CalendarDay
   cost: Float
   howToPay: JSON
+  swagDescription: JSON
+  swagImages: Upload
+  winnerName: String
+  winnerPhoto: Upload
+  secondName: String
+  secondPhoto: Upload
+  thirdName: String
+  thirdPhoto: Upload
+  woodenSpoonName: String
+  woodenSpoonPhoto: Upload
+  bestPaintedName: String
+  bestPaintedPhoto: Upload
+  bestSportName: String
+  bestSportPhoto: Upload
 }
 
 input UserRelateToOneForUpdateInput {
@@ -229,6 +342,9 @@ input UserRelateToOneForUpdateInput {
   disconnect: Boolean
 }
 
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
 input EventUpdateArgs {
   where: EventWhereUniqueInput!
   data: EventUpdateInput!
@@ -236,16 +352,112 @@ input EventUpdateArgs {
 
 input EventCreateInput {
   name: String
+  level: String
   organiser: UserRelateToOneForCreateInput
   venueName: String
+  description: JSON
   date: CalendarDay
   cost: Float
   howToPay: JSON
+  swagDescription: JSON
+  swagImages: Upload
+  winnerName: String
+  winnerPhoto: Upload
+  secondName: String
+  secondPhoto: Upload
+  thirdName: String
+  thirdPhoto: Upload
+  woodenSpoonName: String
+  woodenSpoonPhoto: Upload
+  bestPaintedName: String
+  bestPaintedPhoto: Upload
+  bestSportName: String
+  bestSportPhoto: Upload
 }
 
 input UserRelateToOneForCreateInput {
   create: UserCreateInput
   connect: UserWhereUniqueInput
+}
+
+type Venue {
+  id: ID!
+  name: String
+  flgs: Boolean
+  url: String
+  facebook: String
+  instagram: String
+  firstLine: String
+  secondLine: String
+  city: String
+  postCode: String
+}
+
+input VenueWhereUniqueInput {
+  id: ID
+}
+
+input VenueWhereInput {
+  AND: [VenueWhereInput!]
+  OR: [VenueWhereInput!]
+  NOT: [VenueWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  flgs: BooleanFilter
+  url: StringFilter
+  facebook: StringFilter
+  instagram: StringFilter
+  firstLine: StringFilter
+  secondLine: StringFilter
+  city: StringFilter
+  postCode: StringFilter
+}
+
+input BooleanFilter {
+  equals: Boolean
+  not: BooleanFilter
+}
+
+input VenueOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  flgs: OrderDirection
+  url: OrderDirection
+  facebook: OrderDirection
+  instagram: OrderDirection
+  firstLine: OrderDirection
+  secondLine: OrderDirection
+  city: OrderDirection
+  postCode: OrderDirection
+}
+
+input VenueUpdateInput {
+  name: String
+  flgs: Boolean
+  url: String
+  facebook: String
+  instagram: String
+  firstLine: String
+  secondLine: String
+  city: String
+  postCode: String
+}
+
+input VenueUpdateArgs {
+  where: VenueWhereUniqueInput!
+  data: VenueUpdateInput!
+}
+
+input VenueCreateInput {
+  name: String
+  flgs: Boolean
+  url: String
+  facebook: String
+  instagram: String
+  firstLine: String
+  secondLine: String
+  city: String
+  postCode: String
 }
 
 """
@@ -266,6 +478,12 @@ type Mutation {
   updateEvents(data: [EventUpdateArgs!]!): [Event]
   deleteEvent(where: EventWhereUniqueInput!): Event
   deleteEvents(where: [EventWhereUniqueInput!]!): [Event]
+  createVenue(data: VenueCreateInput!): Venue
+  createVenues(data: [VenueCreateInput!]!): [Venue]
+  updateVenue(where: VenueWhereUniqueInput!, data: VenueUpdateInput!): Venue
+  updateVenues(data: [VenueUpdateArgs!]!): [Venue]
+  deleteVenue(where: VenueWhereUniqueInput!): Venue
+  deleteVenues(where: [VenueWhereUniqueInput!]!): [Venue]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -295,6 +513,9 @@ type Query {
   event(where: EventWhereUniqueInput!): Event
   events(where: EventWhereInput! = {}, orderBy: [EventOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EventWhereUniqueInput): [Event!]
   eventsCount(where: EventWhereInput! = {}): Int
+  venue(where: VenueWhereUniqueInput!): Venue
+  venues(where: VenueWhereInput! = {}, orderBy: [VenueOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: VenueWhereUniqueInput): [Venue!]
+  venuesCount(where: VenueWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }
