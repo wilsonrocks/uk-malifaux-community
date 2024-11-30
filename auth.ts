@@ -15,7 +15,6 @@
 // If you want to learn more about how our out-of-the-box authentication works, please
 // read https://keystonejs.com/docs/apis/auth#authentication-api
 
-import { randomBytes } from "node:crypto";
 import { createAuth } from "@keystone-6/auth";
 
 // see https://keystonejs.com/docs/apis/session for the session docs
@@ -56,4 +55,4 @@ const session = statelessSessions({
   secret: process.env.SESSION_SECRET,
 });
 
-export { withAuth, session };
+export { session, withAuth };

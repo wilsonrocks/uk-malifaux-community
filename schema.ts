@@ -1,66 +1,51 @@
-// Welcome to your schema
-//   Schema driven development is Keystone's modus operandi
-//
-// This file is where we define the lists, fields and hooks for our data.
-// If you want to learn more about how lists are configured, please read
-// - https://keystonejs.com/docs/config/lists
-
 import { group, list } from "@keystone-6/core";
 import { allowAll } from "@keystone-6/core/access";
 
-// see https://keystonejs.com/docs/fields/overview for the full list of fields
-//   this is a few common fields for an example
 import {
-  text,
-  relationship,
-  password,
-  timestamp,
-  select,
   calendarDay,
-  decimal,
-  float,
   checkbox,
+  float,
+  password,
+  relationship,
+  select,
+  text,
+  timestamp,
 } from "@keystone-6/core/fields";
 
-// the document field is a more complicated field, so it has it's own package
 import { document } from "@keystone-6/fields-document";
-// if you want to make your own fields, see https://keystonejs.com/docs/guides/custom-fields
 
 // when using Typescript, you can refine your types to a stricter subset by importing
 // the generated types from '.keystone/types'
-import { type Lists } from ".keystone/types";
+import { UserLevelType, type Lists } from ".keystone/types";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 import { cloudinaryConfig } from "./config";
 
-const isNotLevel =
-  (levelString: string) =>
-  (
-    levelString: string // TODO pull this out of the options enum
-  ) =>
-  ({ session }: any) =>
-    session.data.level !== levelString;
+const anyOf: (
+  funcs: (({ session }: any) => boolean)[]
+) => ({ session }: any) => boolean = (funcs) => {
+  return ({ session }) => funcs.map((func) => func({ session })).some((x) => x);
+};
 
 const isLevel =
-  (
-    levelString: string // TODO pull this out of the options enum
-  ) =>
-  ({ session }: any) =>
-    session.data.level === levelString;
+  (levelString: UserLevelType | UserLevelType[]) =>
+  ({ session }: any) => {
+    const levelStrings = Array.isArray(levelString)
+      ? levelString
+      : [levelString];
+    return levelStrings.some((str) => session.data.level === str);
+  };
 
-const isMasterOrSameUser = ({ session }: any): boolean => {
-  const {
-    itemId,
-    data: { id },
-  } = session;
-  return isLevel("MASTER")({ session }) || session.itemId === session.data.id;
-};
+const isMaster = isLevel("MASTER");
+const isHenchman = isLevel("HENCHMAN");
+const isEnforcer = isLevel("ENFORCER");
+
+const isMasterOrSameUser = anyOf([
+  isLevel("MASTER"),
+  ({ session }) => session.itemId === session.data.id,
+]);
 
 export const lists = {
   User: list({
-    // WARNING
-    //   for this starter project, anyone can create, query, update and delete anything
-    //   if you want to prevent random people on the internet from accessing your data,
-    //   you can find out more at https://keystonejs.com/docs/guides/auth-and-access-control
     access: {
       operation: {
         create: isLevel("MASTER"),
@@ -69,8 +54,9 @@ export const lists = {
         query: () => true,
       },
       filter: {
-        query: ({ session, context }: any) => {
-          if (session.data.level === "MASTER") return {};
+        query: ({ session }) => {
+          if (!session) return {};
+          if (isMaster({ session })) return {};
           return { id: { equals: session.data.id } };
         },
       },
@@ -154,16 +140,39 @@ export const lists = {
   }),
 
   Event: list({
+    ui: {
+      isHidden: ({ session }) =>
+        !isMaster({ session }) && !isHenchman({ session }),
+    },
     access: {
       operation: {
-        create: isLevel("MASTER"),
-        update: isMasterOrSameUser,
-        delete: isLevel("MASTER"),
+        create: ({ session }) =>
+          isMaster({ session }) || isHenchman({ session }),
+        update: ({ session }) => {
+          return isMaster({ session }) || isHenchman({ session });
+        },
+        delete: ({ session }) =>
+          isMaster({ session }) || isHenchman({ session }),
         query: () => true,
       },
+      item: {
+        update: ({ session, item }) => {
+          if (isMaster({ session })) return true;
+          return item.organiserId === session.data.id;
+        },
+        delete: ({ session, item }) => {
+          if (isMaster({ session })) return true;
+          return item.organiserId === session.data.id;
+        },
+      },
       filter: {
-        query: ({ session, context: { query } }: any) => {
-          if (session.data.level === "MASTER") return {};
+        query: (arg: any) => {
+          const { session } = arg;
+          if (session === undefined) return {};
+          console.log({ arg });
+
+          if (!session || !session.data || session.data.level === "MASTER")
+            return {};
           return { organiser: { id: { equals: session.data.id } } };
         },
       },
@@ -278,6 +287,12 @@ export const lists = {
   }),
 
   Team: list({
+    ui: {
+      description: "Team stuff",
+      isHidden: ({ session }) => {
+        return !isMaster({ session }) && !isEnforcer({ session });
+      },
+    },
     access: {
       operation: {
         // TODO should this be enforcer
@@ -287,9 +302,10 @@ export const lists = {
         query: () => true,
       },
       filter: {
-        query: ({ session, context: { query } }: any) => {
-          if (session.data.level === "MASTER") return {};
-          return { organiser: { id: { equals: session.data.id } } };
+        query: ({ session }) => {
+          if (!session) return {};
+          if (isMaster({ session })) return {};
+          return { captain: { id: { equals: session.data.id } } };
         },
       },
     },
@@ -308,7 +324,7 @@ export const lists = {
     fields: {
       name: text(),
       location: text(),
-      captain: text(),
+      captain: relationship({ ref: "User" }),
       logo: cloudinaryImage(cloudinaryConfig),
       description: document(),
       ...group({

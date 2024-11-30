@@ -12,15 +12,16 @@ generator client {
 }
 
 model User {
-  id              String    @id @default(cuid())
-  name            String    @default("")
-  level           String    @default("HENCHMAN")
-  email           String    @unique @default("")
-  password        String
-  createdAt       DateTime? @default(now())
-  discordUsername String    @default("")
-  publicEmail     String    @default("")
-  events          Event[]   @relation("Event_organiser")
+  id                String    @id @default(cuid())
+  name              String    @default("")
+  level             String    @default("HENCHMAN")
+  email             String    @unique @default("")
+  password          String
+  createdAt         DateTime? @default(now())
+  discordUsername   String    @default("")
+  publicEmail       String    @default("")
+  events            Event[]   @relation("Event_organiser")
+  from_Team_captain Team[]    @relation("Team_captain")
 }
 
 model Event {
@@ -68,4 +69,20 @@ model Venue {
   city             String  @default("")
   postCode         String  @default("")
   from_Event_venue Event[] @relation("Event_venue")
+}
+
+model Team {
+  id          String  @id @default(cuid())
+  name        String  @default("")
+  location    String  @default("")
+  captain     User?   @relation("Team_captain", fields: [captainId], references: [id])
+  captainId   String? @map("captain")
+  logo        String?
+  description String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+  discord     String  @default("")
+  facebook    String  @default("")
+  email       String  @default("")
+  members     String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+
+  @@index([captainId])
 }

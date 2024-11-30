@@ -477,6 +477,82 @@ input VenueCreateInput {
   postCode: String
 }
 
+type Team {
+  id: ID!
+  name: String
+  location: String
+  captain: User
+  logo: CloudinaryImage_File
+  description: Team_description_Document
+  discord: String
+  facebook: String
+  email: String
+  members: Team_members_Document
+}
+
+type Team_description_Document {
+  document(hydrateRelationships: Boolean! = false): JSON!
+}
+
+type Team_members_Document {
+  document(hydrateRelationships: Boolean! = false): JSON!
+}
+
+input TeamWhereUniqueInput {
+  id: ID
+}
+
+input TeamWhereInput {
+  AND: [TeamWhereInput!]
+  OR: [TeamWhereInput!]
+  NOT: [TeamWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  location: StringFilter
+  captain: UserWhereInput
+  discord: StringFilter
+  facebook: StringFilter
+  email: StringFilter
+}
+
+input TeamOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  location: OrderDirection
+  discord: OrderDirection
+  facebook: OrderDirection
+  email: OrderDirection
+}
+
+input TeamUpdateInput {
+  name: String
+  location: String
+  captain: UserRelateToOneForUpdateInput
+  logo: Upload
+  description: JSON
+  discord: String
+  facebook: String
+  email: String
+  members: JSON
+}
+
+input TeamUpdateArgs {
+  where: TeamWhereUniqueInput!
+  data: TeamUpdateInput!
+}
+
+input TeamCreateInput {
+  name: String
+  location: String
+  captain: UserRelateToOneForCreateInput
+  logo: Upload
+  description: JSON
+  discord: String
+  facebook: String
+  email: String
+  members: JSON
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -501,6 +577,12 @@ type Mutation {
   updateVenues(data: [VenueUpdateArgs!]!): [Venue]
   deleteVenue(where: VenueWhereUniqueInput!): Venue
   deleteVenues(where: [VenueWhereUniqueInput!]!): [Venue]
+  createTeam(data: TeamCreateInput!): Team
+  createTeams(data: [TeamCreateInput!]!): [Team]
+  updateTeam(where: TeamWhereUniqueInput!, data: TeamUpdateInput!): Team
+  updateTeams(data: [TeamUpdateArgs!]!): [Team]
+  deleteTeam(where: TeamWhereUniqueInput!): Team
+  deleteTeams(where: [TeamWhereUniqueInput!]!): [Team]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -533,6 +615,9 @@ type Query {
   venue(where: VenueWhereUniqueInput!): Venue
   venues(where: VenueWhereInput! = {}, orderBy: [VenueOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: VenueWhereUniqueInput): [Venue!]
   venuesCount(where: VenueWhereInput! = {}): Int
+  team(where: TeamWhereUniqueInput!): Team
+  teams(where: TeamWhereInput! = {}, orderBy: [TeamOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TeamWhereUniqueInput): [Team!]
+  teamsCount(where: TeamWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }
