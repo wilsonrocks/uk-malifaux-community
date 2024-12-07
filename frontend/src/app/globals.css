@@ -19,3 +19,8 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* styles.css */
+.link {
+  @apply text-blue-500 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-300;
+}

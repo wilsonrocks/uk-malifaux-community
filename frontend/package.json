@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@keystone-6/document-renderer": "^1.1.2",
     "graphql-request": "^7.1.2",
     "next": "15.0.4",
     "react": "^19.0.0",

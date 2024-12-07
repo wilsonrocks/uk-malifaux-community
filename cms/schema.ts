@@ -49,7 +49,7 @@ export const lists = {
       filter: {
         query: ({ session }) => {
           if (!session) return {};
-          if (hasPermission("MASTER")({ session })) return {};
+          if (hasPermission("ADMIN")({ session })) return {};
           return { id: { equals: session.data.id } };
         },
       },
@@ -129,19 +129,23 @@ export const lists = {
     access: {
       operation: {
         create: hasPermission("TO"),
-        update: () => false,
+        update: ({ session }) => {
+          return true;
+          if (!hasPermission("TO")({ session })) return false;
+
+          return true; // TODO only allow to edit own events
+        },
         delete: () => false,
         query: () => true,
       },
       item: {
-        update: () => false,
+        update: () => true,
         delete: () => false,
       },
       filter: {
         query: (arg: any) => {
           const { session } = arg;
           if (session === undefined) return {};
-          console.log({ arg });
 
           if (!session || !session.data || session.data.level === "MASTER")
             return {};
@@ -200,7 +204,7 @@ export const lists = {
         ref: "Venue",
         many: false,
       }),
-      description: document(),
+      description: document({ formatting: true }),
       date: calendarDay({
         isIndexed: true,
         ui: { description: 'Will show "tbc" if left blank' },

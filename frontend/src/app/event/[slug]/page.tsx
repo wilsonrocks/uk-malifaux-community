@@ -1,3 +1,4 @@
+import { DocumentRenderer } from "@keystone-6/document-renderer";
 import request, { gql, GraphQLClient } from "graphql-request";
 import { NextPage } from "next";
 
@@ -14,6 +15,9 @@ const EventPage: NextPage = async function EventPage({ params }) {
           slug
           name
           date
+          description {
+            document
+          }
           organiser {
             id
             name
@@ -30,10 +34,13 @@ const EventPage: NextPage = async function EventPage({ params }) {
 
   return (
     <div>
-      <h2>{data?.event?.name}</h2>
-      <p>
+      <h2 className="text-2xl text-center">{data?.event?.name}</h2>
+      <h3 className="text-3xl">
         {data.event.date ?? "TBC"} at {data.event.venue.name}
-      </p>
+      </h3>
+      <div>
+        <DocumentRenderer document={data.event.description.document} />
+      </div>
     </div>
   );
 };
