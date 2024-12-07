@@ -157,6 +157,7 @@ input EventRelateToManyForCreateInput {
 type Event {
   id: ID!
   name: String
+  slug: String
   level: String
   organiser: User
   venue: Venue
@@ -250,6 +251,7 @@ type Event_attendees_Document {
 input EventWhereUniqueInput {
   id: ID
   name: String
+  slug: String
 }
 
 input EventWhereInput {
@@ -258,6 +260,7 @@ input EventWhereInput {
   NOT: [EventWhereInput!]
   id: IDFilter
   name: StringFilter
+  slug: StringFilter
   level: StringFilter
   organiser: UserWhereInput
   venue: VenueWhereInput
@@ -296,6 +299,7 @@ input FloatNullableFilter {
 input EventOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  slug: OrderDirection
   level: OrderDirection
   date: OrderDirection
   cost: OrderDirection
@@ -309,6 +313,7 @@ input EventOrderByInput {
 
 input EventUpdateInput {
   name: String
+  slug: String
   level: String
   organiser: UserRelateToOneForUpdateInput
   venue: VenueRelateToOneForUpdateInput
@@ -355,6 +360,7 @@ input EventUpdateArgs {
 
 input EventCreateInput {
   name: String
+  slug: String
   level: String
   organiser: UserRelateToOneForCreateInput
   venue: VenueRelateToOneForCreateInput

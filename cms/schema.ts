@@ -1,6 +1,6 @@
 import { group, list } from "@keystone-6/core";
 import { allowAll } from "@keystone-6/core/access";
-import { Lists } from ".keystone/types";
+import { Lists, UserPermissionType } from ".keystone/types";
 
 import {
   calendarDay,
@@ -28,11 +28,11 @@ const anyOf: (
 };
 
 const hasPermission =
-  (permission: string) =>
+  (permission: UserPermissionType) =>
   ({ session }: any) => {
     const permissions = session?.data?.permissions;
     if (!Array.isArray(permissions)) return false;
-    if (permissions.includes("MASTER")) return true;
+    if (permissions.includes("ADMIN")) return true;
     if (permissions.includes(permission)) return true;
     return false;
   };
@@ -128,10 +128,10 @@ export const lists = {
     },
     access: {
       operation: {
-        create: () => false,
+        create: hasPermission("TO"),
         update: () => false,
         delete: () => false,
-        query: () => false,
+        query: () => true,
       },
       item: {
         update: () => false,
@@ -164,6 +164,13 @@ export const lists = {
     fields: {
       name: text({
         validation: { isRequired: true },
+        isIndexed: "unique",
+      }),
+      slug: text({
+        validation: {
+          isRequired: true,
+          match: { regex: /^([a-z0-9-]+)$/, explanation: "Can only contain" },
+        },
         isIndexed: "unique",
       }),
       level: select({
