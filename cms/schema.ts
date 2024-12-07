@@ -5,6 +5,7 @@ import {
   calendarDay,
   checkbox,
   float,
+  multiselect,
   password,
   relationship,
   select,
@@ -16,7 +17,6 @@ import { document } from "@keystone-6/fields-document";
 
 // when using Typescript, you can refine your types to a stricter subset by importing
 // the generated types from '.keystone/types'
-import { UserLevelType, type Lists } from ".keystone/types";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 import { cloudinaryConfig } from "./config";
 
@@ -26,37 +26,29 @@ const anyOf: (
   return ({ session }) => funcs.map((func) => func({ session })).some((x) => x);
 };
 
-const isLevel =
-  (levelString: UserLevelType | UserLevelType[]) =>
+const hasPermission =
+  (permission: string) =>
   ({ session }: any) => {
-    const levelStrings = Array.isArray(levelString)
-      ? levelString
-      : [levelString];
-    return levelStrings.some((str) => session.data.level === str);
+    const permissions = session?.data?.permissions;
+    if (!Array.isArray(permissions)) return false;
+    if (permissions.includes("MASTER")) return true;
+    if (permissions.includes(permission)) return true;
+    return false;
   };
-
-const isMaster = isLevel("MASTER");
-const isHenchman = isLevel("HENCHMAN");
-const isEnforcer = isLevel("ENFORCER");
-
-const isMasterOrSameUser = anyOf([
-  isLevel("MASTER"),
-  ({ session }) => session.itemId === session.data.id,
-]);
 
 export const lists = {
   User: list({
     access: {
       operation: {
-        create: isLevel("MASTER"),
-        update: isMasterOrSameUser,
-        delete: isLevel("MASTER"),
+        create: hasPermission("ADMIN"),
+        update: () => true,
+        delete: () => true,
         query: () => true,
       },
       filter: {
         query: ({ session }) => {
           if (!session) return {};
-          if (isMaster({ session })) return {};
+          if (hasPermission("MASTER")({ session })) return {};
           return { id: { equals: session.data.id } };
         },
       },
@@ -67,37 +59,14 @@ export const lists = {
       // by adding isRequired, we enforce that every User should have a name
       //   if no name is provided, an error will be displayed
       name: text({ validation: { isRequired: true } }),
-      level: select({
+      permissions: multiselect({
         type: "enum",
         options: [
-          { value: "MASTER", label: "Master" },
-          { value: "HENCHMAN", label: "Henchman" },
-          { value: "ENFORCER", label: "Enforcer" },
+          { value: "ADMIN", label: "Admin" },
+          { value: "TO", label: "TO" },
+          { value: "CAPTAIN", label: "Team Captain" },
+          { value: "RESOURCE_EDITOR", label: "Resource Editor" },
         ],
-        defaultValue: "HENCHMAN",
-        db: { isNullable: false },
-        validation: { isRequired: true },
-        access: {
-          read: isLevel("MASTER"),
-          update: isLevel("MASTER"),
-          create: ({ session, context }) => {
-            return isLevel("MASTER")({ session });
-          },
-        },
-        ui: {
-          createView: {
-            fieldMode: ({ session }: any) => {
-              if (isLevel("MASTER")({ session })) return "edit";
-              return "hidden";
-            },
-          },
-          itemView: {
-            fieldMode: ({ session }: any) => {
-              if (isLevel("MASTER")({ session })) return "edit";
-              return "hidden";
-            },
-          },
-        },
       }),
       email: text({
         validation: { isRequired: true },
@@ -109,9 +78,7 @@ export const lists = {
             "This is not public, it's just used to login to this site",
         },
       }),
-
       password: password({ validation: { isRequired: true } }),
-
       createdAt: timestamp({
         // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: "now" },
@@ -141,29 +108,18 @@ export const lists = {
 
   Event: list({
     ui: {
-      isHidden: ({ session }) =>
-        !isMaster({ session }) && !isHenchman({ session }),
+      isHidden: ({ session }) => false,
     },
     access: {
       operation: {
-        create: ({ session }) =>
-          isMaster({ session }) || isHenchman({ session }),
-        update: ({ session }) => {
-          return isMaster({ session }) || isHenchman({ session });
-        },
-        delete: ({ session }) =>
-          isMaster({ session }) || isHenchman({ session }),
-        query: () => true,
+        create: () => false,
+        update: () => false,
+        delete: () => false,
+        query: () => false,
       },
       item: {
-        update: ({ session, item }) => {
-          if (isMaster({ session })) return true;
-          return item.organiserId === session.data.id;
-        },
-        delete: ({ session, item }) => {
-          if (isMaster({ session })) return true;
-          return item.organiserId === session.data.id;
-        },
+        update: () => false,
+        delete: () => false,
       },
       filter: {
         query: (arg: any) => {
@@ -212,8 +168,7 @@ export const lists = {
           createView: { fieldMode: "hidden" },
           listView: {
             fieldMode: ({ session }) => {
-              if (isLevel("MASTER")({ session })) return "read";
-              return "hidden";
+              return "read";
             },
           },
         },
@@ -290,21 +245,19 @@ export const lists = {
     ui: {
       description: "Team stuff",
       isHidden: ({ session }) => {
-        return !isMaster({ session }) && !isEnforcer({ session });
+        return false;
       },
     },
     access: {
       operation: {
-        // TODO should this be enforcer
-        create: isLevel("MASTER"),
-        update: isMasterOrSameUser,
-        delete: isLevel("MASTER"),
+        create: hasPermission("RESOURCE_EDITOR"),
+        update: () => false,
+        delete: () => false,
         query: () => true,
       },
       filter: {
         query: ({ session }) => {
           if (!session) return {};
-          if (isMaster({ session })) return {};
           return { captain: { id: { equals: session.data.id } } };
         },
       },
