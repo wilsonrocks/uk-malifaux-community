@@ -4,7 +4,7 @@
 type User {
   id: ID!
   name: String
-  level: UserLevelType
+  permissions: [UserPermissionType!]
   email: String
   password: PasswordState
   createdAt: DateTime
@@ -14,10 +14,11 @@ type User {
   eventsCount(where: EventWhereInput! = {}): Int
 }
 
-enum UserLevelType {
-  MASTER
-  HENCHMAN
-  ENFORCER
+enum UserPermissionType {
+  ADMIN
+  TO
+  CAPTAIN
+  RESOURCE_EDITOR
 }
 
 type PasswordState {
@@ -37,7 +38,6 @@ input UserWhereInput {
   NOT: [UserWhereInput!]
   id: IDFilter
   name: StringFilter
-  level: UserLevelTypeNullableFilter
   email: StringFilter
   createdAt: DateTimeNullableFilter
   discordUsername: StringFilter
@@ -84,13 +84,6 @@ input NestedStringFilter {
   not: NestedStringFilter
 }
 
-input UserLevelTypeNullableFilter {
-  equals: UserLevelType
-  in: [UserLevelType!]
-  notIn: [UserLevelType!]
-  not: UserLevelTypeNullableFilter
-}
-
 input DateTimeNullableFilter {
   equals: DateTime
   in: [DateTime!]
@@ -111,7 +104,6 @@ input EventManyRelationFilter {
 input UserOrderByInput {
   id: OrderDirection
   name: OrderDirection
-  level: OrderDirection
   email: OrderDirection
   createdAt: OrderDirection
   discordUsername: OrderDirection
@@ -125,7 +117,7 @@ enum OrderDirection {
 
 input UserUpdateInput {
   name: String
-  level: UserLevelType
+  permissions: [UserPermissionType!]
   email: String
   password: String
   createdAt: DateTime
@@ -148,7 +140,7 @@ input UserUpdateArgs {
 
 input UserCreateInput {
   name: String
-  level: UserLevelType
+  permissions: [UserPermissionType!]
   email: String
   password: String
   createdAt: DateTime

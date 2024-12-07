@@ -1,5 +1,6 @@
 import { group, list } from "@keystone-6/core";
 import { allowAll } from "@keystone-6/core/access";
+import { Lists } from ".keystone/types";
 
 import {
   calendarDay,
@@ -103,6 +104,21 @@ export const lists = {
         many: true,
         ui: { itemView: { fieldMode: "hidden" } },
       }),
+    },
+
+    hooks: {
+      // Automatically set the logged-in user as the author on create
+      resolveInput: async ({ resolvedData, context, operation }) => {
+        if (operation === "create") {
+          const existingUserCount = await context.prisma.user.count();
+          if (existingUserCount === 0)
+            return {
+              ...resolvedData,
+              permissions: '["ADMIN"]', // TODO change if we move from sqlite?
+            };
+        }
+        return resolvedData;
+      },
     },
   }),
 
