@@ -12,6 +12,8 @@ type User {
   publicEmail: String
   events(where: EventWhereInput! = {}, orderBy: [EventOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: EventWhereUniqueInput): [Event!]
   eventsCount(where: EventWhereInput! = {}): Int
+  resources(where: ResourceWhereInput! = {}, orderBy: [ResourceOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ResourceWhereUniqueInput): [Resource!]
+  resourcesCount(where: ResourceWhereInput! = {}): Int
 }
 
 enum UserPermissionType {
@@ -43,6 +45,7 @@ input UserWhereInput {
   discordUsername: StringFilter
   publicEmail: StringFilter
   events: EventManyRelationFilter
+  resources: ResourceManyRelationFilter
 }
 
 input IDFilter {
@@ -101,6 +104,12 @@ input EventManyRelationFilter {
   none: EventWhereInput
 }
 
+input ResourceManyRelationFilter {
+  every: ResourceWhereInput
+  some: ResourceWhereInput
+  none: ResourceWhereInput
+}
+
 input UserOrderByInput {
   id: OrderDirection
   name: OrderDirection
@@ -124,6 +133,7 @@ input UserUpdateInput {
   discordUsername: String
   publicEmail: String
   events: EventRelateToManyForUpdateInput
+  resources: ResourceRelateToManyForUpdateInput
 }
 
 input EventRelateToManyForUpdateInput {
@@ -131,6 +141,13 @@ input EventRelateToManyForUpdateInput {
   set: [EventWhereUniqueInput!]
   create: [EventCreateInput!]
   connect: [EventWhereUniqueInput!]
+}
+
+input ResourceRelateToManyForUpdateInput {
+  disconnect: [ResourceWhereUniqueInput!]
+  set: [ResourceWhereUniqueInput!]
+  create: [ResourceCreateInput!]
+  connect: [ResourceWhereUniqueInput!]
 }
 
 input UserUpdateArgs {
@@ -147,11 +164,17 @@ input UserCreateInput {
   discordUsername: String
   publicEmail: String
   events: EventRelateToManyForCreateInput
+  resources: ResourceRelateToManyForCreateInput
 }
 
 input EventRelateToManyForCreateInput {
   create: [EventCreateInput!]
   connect: [EventWhereUniqueInput!]
+}
+
+input ResourceRelateToManyForCreateInput {
+  create: [ResourceCreateInput!]
+  connect: [ResourceWhereUniqueInput!]
 }
 
 type Event {
@@ -551,6 +574,57 @@ input TeamCreateInput {
   members: JSON
 }
 
+type Resource {
+  id: ID!
+  name: String
+  description: String
+  content: Resource_content_Document
+  author: User
+}
+
+type Resource_content_Document {
+  document(hydrateRelationships: Boolean! = false): JSON!
+}
+
+input ResourceWhereUniqueInput {
+  id: ID
+}
+
+input ResourceWhereInput {
+  AND: [ResourceWhereInput!]
+  OR: [ResourceWhereInput!]
+  NOT: [ResourceWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  description: StringFilter
+  author: UserWhereInput
+}
+
+input ResourceOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  description: OrderDirection
+}
+
+input ResourceUpdateInput {
+  name: String
+  description: String
+  content: JSON
+  author: UserRelateToOneForUpdateInput
+}
+
+input ResourceUpdateArgs {
+  where: ResourceWhereUniqueInput!
+  data: ResourceUpdateInput!
+}
+
+input ResourceCreateInput {
+  name: String
+  description: String
+  content: JSON
+  author: UserRelateToOneForCreateInput
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -581,6 +655,12 @@ type Mutation {
   updateTeams(data: [TeamUpdateArgs!]!): [Team]
   deleteTeam(where: TeamWhereUniqueInput!): Team
   deleteTeams(where: [TeamWhereUniqueInput!]!): [Team]
+  createResource(data: ResourceCreateInput!): Resource
+  createResources(data: [ResourceCreateInput!]!): [Resource]
+  updateResource(where: ResourceWhereUniqueInput!, data: ResourceUpdateInput!): Resource
+  updateResources(data: [ResourceUpdateArgs!]!): [Resource]
+  deleteResource(where: ResourceWhereUniqueInput!): Resource
+  deleteResources(where: [ResourceWhereUniqueInput!]!): [Resource]
   endSession: Boolean!
   authenticateUserWithPassword(email: String!, password: String!): UserAuthenticationWithPasswordResult
   createInitialUser(data: CreateInitialUserInput!): UserAuthenticationWithPasswordSuccess!
@@ -616,6 +696,9 @@ type Query {
   team(where: TeamWhereUniqueInput!): Team
   teams(where: TeamWhereInput! = {}, orderBy: [TeamOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: TeamWhereUniqueInput): [Team!]
   teamsCount(where: TeamWhereInput! = {}): Int
+  resource(where: ResourceWhereUniqueInput!): Resource
+  resources(where: ResourceWhereInput! = {}, orderBy: [ResourceOrderByInput!]! = [], take: Int, skip: Int! = 0, cursor: ResourceWhereUniqueInput): [Resource!]
+  resourcesCount(where: ResourceWhereInput! = {}): Int
   keystone: KeystoneMeta!
   authenticatedItem: AuthenticatedItem
 }

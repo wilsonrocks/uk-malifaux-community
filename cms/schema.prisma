@@ -12,16 +12,17 @@ generator client {
 }
 
 model User {
-  id                String    @id @default(cuid())
-  name              String    @default("")
-  permissions       String    @default("[]")
-  email             String    @unique @default("")
+  id                String     @id @default(cuid())
+  name              String     @default("")
+  permissions       String     @default("[]")
+  email             String     @unique @default("")
   password          String
-  createdAt         DateTime? @default(now())
-  discordUsername   String    @default("")
-  publicEmail       String    @default("")
-  events            Event[]   @relation("Event_organiser")
-  from_Team_captain Team[]    @relation("Team_captain")
+  createdAt         DateTime?  @default(now())
+  discordUsername   String     @default("")
+  publicEmail       String     @default("")
+  events            Event[]    @relation("Event_organiser")
+  resources         Resource[] @relation("Resource_author")
+  from_Team_captain Team[]     @relation("Team_captain")
 }
 
 model Event {
@@ -86,4 +87,15 @@ model Team {
   members     String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
 
   @@index([captainId])
+}
+
+model Resource {
+  id          String  @id @default(cuid())
+  name        String  @default("")
+  description String  @default("")
+  content     String  @default("[{\"type\":\"paragraph\",\"children\":[{\"text\":\"\"}]}]")
+  author      User?   @relation("Resource_author", fields: [authorId], references: [id])
+  authorId    String? @map("author")
+
+  @@index([authorId])
 }

@@ -1,5 +1,5 @@
 import { group, list } from "@keystone-6/core";
-import { allowAll } from "@keystone-6/core/access";
+import { allOperations, allowAll } from "@keystone-6/core/access";
 import { Lists, UserPermissionType } from ".keystone/types";
 
 import {
@@ -40,12 +40,7 @@ const hasPermission =
 export const lists = {
   User: list({
     access: {
-      operation: {
-        create: hasPermission("ADMIN"),
-        update: () => true,
-        delete: () => true,
-        query: () => true,
-      },
+      operation: allowAll,
       filter: {
         query: ({ session }) => {
           if (!session) return {};
@@ -104,6 +99,12 @@ export const lists = {
         many: true,
         ui: { itemView: { fieldMode: "hidden" } },
       }),
+
+      resources: relationship({
+        ref: "Resource.author",
+        many: true,
+        ui: { itemView: { fieldMode: "hidden" } },
+      }),
     },
 
     hooks: {
@@ -127,17 +128,7 @@ export const lists = {
       isHidden: ({ session }) => false,
     },
     access: {
-      operation: {
-        create: hasPermission("TO"),
-        update: ({ session }) => {
-          return true;
-          if (!hasPermission("TO")({ session })) return false;
-
-          return true; // TODO only allow to edit own events
-        },
-        delete: () => false,
-        query: () => true,
-      },
+      operation: allowAll,
       item: {
         update: () => true,
         delete: () => false,
@@ -276,12 +267,7 @@ export const lists = {
       },
     },
     access: {
-      operation: {
-        create: hasPermission("RESOURCE_EDITOR"),
-        update: () => false,
-        delete: () => false,
-        query: () => true,
-      },
+      operation: allowAll,
       filter: {
         query: ({ session }) => {
           if (!session) return {};
@@ -316,6 +302,28 @@ export const lists = {
         },
       }),
       members: document(),
+    },
+  }),
+
+  Resource: list({
+    ui: {
+      isHidden: ({ session }) => !hasPermission("RESOURCE_EDITOR")({ session }),
+    },
+    access: {
+      operation: allowAll,
+      filter: {
+        query: ({ session }) => {
+          if (!session) return {};
+          if (hasPermission("ADMIN")) return {};
+          return {};
+        },
+      },
+    },
+    fields: {
+      name: text(),
+      description: text(),
+      content: document({ formatting: true }),
+      author: relationship({ ref: "User.resources", many: false }),
     },
   }),
 } satisfies Lists;
