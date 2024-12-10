@@ -1,3 +1,16 @@
+import betterSqlite3 from "better-sqlite3";
+
+const db = betterSqlite3("sessions.db");
+db.prepare(
+  `CREATE TABLE IF NOT EXISTS sessions (sessionId TEXT PRIMARY KEY, data TEXT);`
+).run();
+
+const setSession = db.prepare(
+  `INSERT INTO sessions (sessionId, data) values (?, ?);`
+);
+
+const getSession = db.prepare(`SELECT data FROM sessions WHERE sessionId = ?;`);
+const deleteSession = db.prepare(`DELETE FROM sessions WHERE sessionId = ?;`);
 // Welcome to some authentication for Keystone
 //
 // This is using @keystone-6/auth to add the following
@@ -18,7 +31,7 @@
 import { createAuth } from "@keystone-6/auth";
 
 // see https://keystonejs.com/docs/apis/session for the session docs
-import { statelessSessions } from "@keystone-6/core/session";
+import { statelessSessions, storedSessions } from "@keystone-6/core/session";
 
 // withAuth is a function we can use to wrap our base configuration
 const { withAuth } = createAuth({
@@ -50,9 +63,25 @@ const { withAuth } = createAuth({
 const sessionMaxAge = 60 * 60 * 24 * 30;
 
 // you can find out more at https://keystonejs.com/docs/apis/session#session-api
-const session = statelessSessions({
+const session = storedSessions({
   maxAge: sessionMaxAge,
   secret: process.env.SESSION_SECRET,
+
+  store: ({ maxAge }) => ({
+    secret: process.env.SESSION_SECRET,
+    cookie: { maxAge },
+    set: async (sessionId, data) => {
+      setSession.run(sessionId, JSON.stringify(data));
+    },
+    get: async (sessionId) => {
+      const row = await getSession.get(sessionId);
+      const parsed = JSON.parse((row as any)?.data); // this cast is v much depending on the JSON.stringify above being the only thing to write to this table
+      return parsed;
+    },
+    delete: async (sessionId) => {
+      deleteSession.run(sessionId);
+    },
+  }),
 });
 
 export { session, withAuth };

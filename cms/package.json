@@ -12,6 +12,8 @@
     "@keystone-6/cloudinary": "^8.0.0",
     "@keystone-6/core": "^6.0.0",
     "@keystone-6/fields-document": "^9.0.0",
+    "@types/better-sqlite3": "^7.6.12",
+    "better-sqlite3": "^11.7.0",
     "env-var": "^7.5.0",
     "typescript": "^5.5.0"
   }
