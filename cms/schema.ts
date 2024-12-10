@@ -1,6 +1,6 @@
-import { group, list } from "@keystone-6/core";
-import { allOperations, allowAll } from "@keystone-6/core/access";
 import { Lists, UserPermissionType } from ".keystone/types";
+import { group, list } from "@keystone-6/core";
+import { allowAll } from "@keystone-6/core/access";
 
 import {
   calendarDay,
@@ -21,12 +21,6 @@ import { document } from "@keystone-6/fields-document";
 import { cloudinaryImage } from "@keystone-6/cloudinary";
 import { cloudinaryConfig } from "./config";
 
-const anyOf: (
-  funcs: (({ session }: any) => boolean)[]
-) => ({ session }: any) => boolean = (funcs) => {
-  return ({ session }) => funcs.map((func) => func({ session })).some((x) => x);
-};
-
 const hasPermission =
   (permission: UserPermissionType) =>
   ({ session }: any) => {
@@ -36,6 +30,11 @@ const hasPermission =
     if (permissions.includes(permission)) return true;
     return false;
   };
+
+const doesNotHavePermission =
+  (permission: UserPermissionType) =>
+  ({ session }: any) =>
+    !hasPermission(permission)({ session });
 
 export const lists = {
   User: list({
@@ -78,6 +77,11 @@ export const lists = {
       createdAt: timestamp({
         // this sets the timestamp to Date.now() when the user is first created
         defaultValue: { kind: "now" },
+        ui: {
+          itemView: {
+            fieldMode: "hidden",
+          },
+        },
       }),
 
       ...group({
@@ -125,7 +129,7 @@ export const lists = {
 
   Event: list({
     ui: {
-      isHidden: ({ session }) => false,
+      isHidden: doesNotHavePermission("TO"),
     },
     access: {
       operation: allowAll,
@@ -164,9 +168,17 @@ export const lists = {
       slug: text({
         validation: {
           isRequired: true,
-          match: { regex: /^([a-z0-9-]+)$/, explanation: "Can only contain" },
+          match: {
+            regex: /^([a-z0-9-]+)$/,
+            explanation:
+              "Can only contain lower case letters, numbers and hyphens.",
+          },
         },
         isIndexed: "unique",
+        ui: {
+          description:
+            "This will be part of the url and must be unique among ALL events in the system. It can only contain lower case letters, numbers and hyphens. The best format is your event name with a year e.g. 'a-foul-gift-2024' or 'nationals-2025'",
+        },
       }),
       level: select({
         options: [
@@ -238,6 +250,7 @@ export const lists = {
     access: allowAll,
     fields: {
       name: text({ validation: { isRequired: true } }),
+      slug: text({ validation: { isRequired: true }, isIndexed: "unique" }),
       flgs: checkbox({
         label: "Friendly Local Game Store",
         ui: {
@@ -262,9 +275,7 @@ export const lists = {
   Team: list({
     ui: {
       description: "Team stuff",
-      isHidden: ({ session }) => {
-        return false;
-      },
+      isHidden: doesNotHavePermission("CAPTAIN"),
     },
     access: {
       operation: allowAll,

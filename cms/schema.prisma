@@ -62,6 +62,7 @@ model Event {
 model Venue {
   id               String  @id @default(cuid())
   name             String  @default("")
+  slug             String  @unique @default("")
   flgs             Boolean @default(false)
   url              String  @default("")
   facebook         String  @default("")

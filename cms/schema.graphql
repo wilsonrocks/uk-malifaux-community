@@ -421,6 +421,7 @@ input VenueRelateToOneForCreateInput {
 type Venue {
   id: ID!
   name: String
+  slug: String
   flgs: Boolean
   url: String
   facebook: String
@@ -433,6 +434,7 @@ type Venue {
 
 input VenueWhereUniqueInput {
   id: ID
+  slug: String
 }
 
 input VenueWhereInput {
@@ -441,6 +443,7 @@ input VenueWhereInput {
   NOT: [VenueWhereInput!]
   id: IDFilter
   name: StringFilter
+  slug: StringFilter
   flgs: BooleanFilter
   url: StringFilter
   facebook: StringFilter
@@ -459,6 +462,7 @@ input BooleanFilter {
 input VenueOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  slug: OrderDirection
   flgs: OrderDirection
   url: OrderDirection
   facebook: OrderDirection
@@ -471,6 +475,7 @@ input VenueOrderByInput {
 
 input VenueUpdateInput {
   name: String
+  slug: String
   flgs: Boolean
   url: String
   facebook: String
@@ -488,6 +493,7 @@ input VenueUpdateArgs {
 
 input VenueCreateInput {
   name: String
+  slug: String
   flgs: Boolean
   url: String
   facebook: String
