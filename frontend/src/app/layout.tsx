@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Link from "next/link";
+import Navigation from "@/components/navigation/navigation";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,9 +31,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-green-100`}
       >
         <div className="md:container md:mx-auto p-4">
-          <h1 className="text-3xl font-bold text-right p-1 siz">
-            <Link href="/">UK Malifaux Community</Link>
-          </h1>
+          <div className="flex justify-between items-center text-l font-bold">
+            <Navigation />
+
+            <h1 className="text-3xl font-bold text-right p-1 siz">
+              <Link href="/">UK Malifaux Community</Link>
+            </h1>
+          </div>
           {children}
         </div>
       </body>
