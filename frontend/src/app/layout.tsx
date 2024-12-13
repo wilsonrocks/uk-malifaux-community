@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Link from "next/link";
 import Navigation from "@/components/navigation/navigation";
+import BigNavigation from "@/components/navigation/big-nav";
+import MobileNavigation from "@/components/navigation/mobile-nav";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,7 +34,8 @@ export default function RootLayout({
       >
         <div className="md:container md:mx-auto p-4">
           <div className="flex justify-between items-center text-l font-bold">
-            <Navigation />
+            <BigNavigation />
+            <MobileNavigation />
 
             <h1 className="text-3xl font-bold text-right p-1 siz">
               <Link href="/">UK Malifaux Community</Link>

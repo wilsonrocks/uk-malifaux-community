@@ -1,12 +1,21 @@
+"use client";
 import Link from "next/link";
+import { navigationLinks } from "./navigation-links";
+import { usePathname } from "next/navigation";
 
 const BigNavigation: React.FC = () => {
+  const pathname = usePathname();
   return (
     <nav className="hidden md:flex gap-4">
-      <Link href="/">Home</Link>
-      <Link href="/event">Events</Link>
-      <Link href="/team">Teams</Link>
-      <Link href="/resource">Resources</Link>
+      {navigationLinks.map(({ href, text }) => (
+        <Link
+          href={href}
+          key={href}
+          className={href === pathname ? "underline" : undefined}
+        >
+          {text}
+        </Link>
+      ))}
     </nav>
   );
 };
