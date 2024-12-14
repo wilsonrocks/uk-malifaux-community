@@ -177,7 +177,7 @@ export const lists = {
         isIndexed: "unique",
         ui: {
           description:
-            "This will be part of the url and must be unique among ALL events in the system. It can only contain lower case letters, numbers and hyphens. The best format is your event name with a year e.g. 'a-foul-gift-2024' or 'nationals-2025'",
+            "This will be part of the url and must be unique among all of the things of this kind. It can only contain lower case letters, numbers and hyphens.",
         },
       }),
       level: select({
@@ -250,7 +250,21 @@ export const lists = {
     access: allowAll,
     fields: {
       name: text({ validation: { isRequired: true } }),
-      slug: text({ validation: { isRequired: true }, isIndexed: "unique" }),
+      slug: text({
+        validation: {
+          isRequired: true,
+          match: {
+            regex: /^([a-z0-9-]+)$/,
+            explanation:
+              "Can only contain lower case letters, numbers and hyphens.",
+          },
+        },
+        isIndexed: "unique",
+        ui: {
+          description:
+            "This will be part of the url and must be unique among all of the things of this kind. It can only contain lower case letters, numbers and hyphens.",
+        },
+      }),
       flgs: checkbox({
         label: "Friendly Local Game Store",
         ui: {
@@ -292,7 +306,7 @@ export const lists = {
         if (operation === "create") {
           return {
             ...resolvedData,
-            organiser: { connect: { id: context.session?.data.id } },
+            captain: { connect: { id: context.session?.data.id } },
           };
         }
         return resolvedData;
@@ -300,6 +314,21 @@ export const lists = {
     },
     fields: {
       name: text(),
+      slug: text({
+        validation: {
+          isRequired: true,
+          match: {
+            regex: /^([a-z0-9-]+)$/,
+            explanation:
+              "Can only contain lower case letters, numbers and hyphens.",
+          },
+        },
+        isIndexed: "unique",
+        ui: {
+          description:
+            "This will be part of the url and must be unique among all of the things of this kind. It can only contain lower case letters, numbers and hyphens.",
+        },
+      }),
       location: text(),
       captain: relationship({ ref: "User" }),
       logo: cloudinaryImage(cloudinaryConfig),
@@ -335,6 +364,21 @@ export const lists = {
       description: text(),
       content: document({ formatting: true }),
       author: relationship({ ref: "User.resources", many: false }),
+      slug: text({
+        validation: {
+          isRequired: true,
+          match: {
+            regex: /^([a-z0-9-]+)$/,
+            explanation:
+              "Can only contain lower case letters, numbers and hyphens.",
+          },
+        },
+        isIndexed: "unique",
+        ui: {
+          description:
+            "This will be part of the url and must be unique among all of the things of this kind. It can only contain lower case letters, numbers and hyphens.",
+        },
+      }),
     },
   }),
 } satisfies Lists;

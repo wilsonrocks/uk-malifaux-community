@@ -507,6 +507,7 @@ input VenueCreateInput {
 type Team {
   id: ID!
   name: String
+  slug: String
   location: String
   captain: User
   logo: CloudinaryImage_File
@@ -527,6 +528,7 @@ type Team_members_Document {
 
 input TeamWhereUniqueInput {
   id: ID
+  slug: String
 }
 
 input TeamWhereInput {
@@ -535,6 +537,7 @@ input TeamWhereInput {
   NOT: [TeamWhereInput!]
   id: IDFilter
   name: StringFilter
+  slug: StringFilter
   location: StringFilter
   captain: UserWhereInput
   discord: StringFilter
@@ -545,6 +548,7 @@ input TeamWhereInput {
 input TeamOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  slug: OrderDirection
   location: OrderDirection
   discord: OrderDirection
   facebook: OrderDirection
@@ -553,6 +557,7 @@ input TeamOrderByInput {
 
 input TeamUpdateInput {
   name: String
+  slug: String
   location: String
   captain: UserRelateToOneForUpdateInput
   logo: Upload
@@ -570,6 +575,7 @@ input TeamUpdateArgs {
 
 input TeamCreateInput {
   name: String
+  slug: String
   location: String
   captain: UserRelateToOneForCreateInput
   logo: Upload
@@ -586,6 +592,7 @@ type Resource {
   description: String
   content: Resource_content_Document
   author: User
+  slug: String
 }
 
 type Resource_content_Document {
@@ -594,6 +601,7 @@ type Resource_content_Document {
 
 input ResourceWhereUniqueInput {
   id: ID
+  slug: String
 }
 
 input ResourceWhereInput {
@@ -604,12 +612,14 @@ input ResourceWhereInput {
   name: StringFilter
   description: StringFilter
   author: UserWhereInput
+  slug: StringFilter
 }
 
 input ResourceOrderByInput {
   id: OrderDirection
   name: OrderDirection
   description: OrderDirection
+  slug: OrderDirection
 }
 
 input ResourceUpdateInput {
@@ -617,6 +627,7 @@ input ResourceUpdateInput {
   description: String
   content: JSON
   author: UserRelateToOneForUpdateInput
+  slug: String
 }
 
 input ResourceUpdateArgs {
@@ -629,6 +640,7 @@ input ResourceCreateInput {
   description: String
   content: JSON
   author: UserRelateToOneForCreateInput
+  slug: String
 }
 
 """

@@ -1,13 +1,11 @@
+import { graphQlClient } from "@/lib/graphql-client";
 import { DocumentRenderer } from "@keystone-6/document-renderer";
-import request, { gql, GraphQLClient } from "graphql-request";
+import { gql } from "graphql-request";
 import { NextPage } from "next";
-
-const client = new GraphQLClient("http://localhost:3000/api/graphql");
 
 const EventPage: NextPage = async function EventPage({ params }) {
   const { slug } = await params;
-  const data = await request(
-    "http://localhost:3000/api/graphql",
+  const data = await graphQlClient.request(
     gql`
       query Event($where: EventWhereUniqueInput!) {
         event(where: $where) {

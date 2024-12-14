@@ -32,7 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-green-100`}
       >
-        <div className="md:container md:mx-auto p-4">
+        <div className="container max-w-screen-md md:mx-auto p-4">
           <div className="flex justify-between items-center text-l font-bold">
             <BigNavigation />
             <MobileNavigation />
