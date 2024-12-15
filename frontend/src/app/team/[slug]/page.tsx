@@ -2,6 +2,7 @@ import { graphQlClient } from "@/lib/graphql-client";
 import { DocumentRenderer } from "@keystone-6/document-renderer";
 import { gql } from "graphql-request";
 import { NextPage } from "next";
+import { notFound } from "next/navigation";
 
 const ResourcePage: NextPage = async function ResourcePage({ params }) {
   const { slug } = await params;
@@ -24,11 +25,14 @@ const ResourcePage: NextPage = async function ResourcePage({ params }) {
     { where: { slug } }
   );
 
+  if (!data) notFound();
+
   return (
     <div>
-      <h2 className="text-2xl text-center">{data?.resource?.name}</h2>
+      <h2 className="text-2xl text-center">{data?.team?.name}</h2>
+
       <div>
-        <DocumentRenderer document={data.resource.content.document} />
+        {/* <DocumentRenderer document={data.resource?.content.document} /> */}
       </div>
     </div>
   );
