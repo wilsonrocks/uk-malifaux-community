@@ -1,0 +1,36 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% comment %} fonts {% endcomment %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+      rel="stylesheet"
+    />
+
+    {% tailwind_css %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UK Malifaux Community</title>
+  </head>
+  <body class="font-dosis bg-zinc-800 text-zinc-50">
+    <div class="md:container md:mx-auto p-4">
+      <h1 class="ml-2">
+        <a
+          class="text-4xl font-bold no-underline text-zinc-50"
+          href="{% url 'home_page' %}"
+          >UK Malifaux Community</a
+        >
+      </h1>
+      <nav class="flex gap-1 justify-end">
+        <a href="{% url 'event_list' %}">Events</a>
+        <a href="{% url 'team_list' %}">Teams</a>
+      </nav>
+    </div>
+    <div class="md:container md:mx-auto px-4">
+      <section>{% block content %} {% endblock %}</section>
+    </div>
+  </body>
+</html>

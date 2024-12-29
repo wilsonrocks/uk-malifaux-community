@@ -1,0 +1,17 @@
+{% extends 'website/base.html' %} {% block content%} {% if object_list %}
+<table>
+  <tbody>
+    {% for event in object_list %}
+
+    <tr>
+      <td>
+        <a href="{% url 'event_detail' pk=event.pk %}">{{event.name}}</a>
+      </td>
+      <td>{{event.date}}</td>
+      <td>{{event.venue.name}} - {{event.venue.city}}</td>
+    </tr>
+
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}{% endblock %}
