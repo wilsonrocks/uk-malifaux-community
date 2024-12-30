@@ -1,17 +1,16 @@
-{% extends 'website/base.html' %} {% block content%} {% if object_list %}
+{% extends "website/base.html" %} {% block content %}
 <table>
   <tbody>
-    {% for event in object_list %}
-
-    <tr>
-      <td>
-        <a href="{% url 'event_detail' pk=event.pk %}">{{event.name}}</a>
-      </td>
-      <td>{{event.date}}</td>
-      <td>{{event.venue.name}} - {{event.venue.city}}</td>
-    </tr>
+    {% regroup object_list by date as events_by_date %}
+    {% for group in events_by_date %}
+    <h5 class="ml-2 font-bold">{{ group.grouper }}</h5>
+    {% for event in group.list %}
+    <p>{{ event.name }}</p>
+    {% empty %} NOTHING HERE 1
+    {% endfor %}
+    {% empty %} NOTHING HERE 2
 
     {% endfor %}
   </tbody>
 </table>
-{% endif %}{% endblock %}
+{% endblock content %}
