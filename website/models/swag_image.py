@@ -5,16 +5,17 @@ from django.utils.safestring import mark_safe
 from .mixins import ImagePreviewMixin
 
 
-class BestPaintedImage(models.Model, ImagePreviewMixin):
+class SwagImage(models.Model, ImagePreviewMixin):
     event = models.ForeignKey(
-        Event, on_delete=models.CASCADE, related_name="best_painted_images"
+        Event, on_delete=models.CASCADE, related_name="swag_images"
     )
-    painter = models.CharField(max_length=50)
-    title = models.CharField(max_length=50)
+
     image = CloudinaryField("image")  # Cloudinary image field
-    is_winner = models.BooleanField()
+
+    name = models.CharField(max_length=50, blank=True)
+    description = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return f"{self.painter}: {self.title}"
+        return self.caption
 
     
