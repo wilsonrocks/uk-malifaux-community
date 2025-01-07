@@ -1,21 +1,43 @@
 from django.contrib import admin
-from website.models import  BestPaintedImage, Player, Event
+from website.models import (
+    PlayImage,
+    PrizeImage,
+    BestPaintedImage,
+    Winner,
+    Player,
+    Event,
+    SwagImage,
+)
+from .base_image_inline import BaseImageInline
 
-class BestPaintedImageInline(admin.StackedInline):
-    # TODO add order and work out how to add up/down buttons
-    class Media:
-        js = ("/static/website/js/custom_admin.js",)  # Add your custom JavaScript file
 
+class BestPaintedImageInline(BaseImageInline):
     model = BestPaintedImage
-    readonly_fields = ["file_preview"]
-    extra = 1  # Number of empty forms to display by default
-    fields = [
-        "image",
-        "file_preview",
+    custom_fields = [
         "painter",
         "title",
         "is_winner",
     ]
+
+
+class PlayImageInline(BaseImageInline):
+    model = PlayImage
+    custom_fields = ["caption"]
+
+
+class PrizeImageInline(BaseImageInline):
+    model = PrizeImage
+    custom_fields = ["name", "description"]
+
+
+class WinnerInline(BaseImageInline):
+    model = Winner
+    custom_fields = ["name", "position"]
+
+
+class SwagImageInline(BaseImageInline):
+    model = SwagImage
+    custom_fields = ["name", "description"]
 
 
 class PlayerInline(admin.TabularInline):
@@ -30,6 +52,10 @@ class EventAdmin(admin.ModelAdmin):
     inlines = [
         BestPaintedImageInline,
         PlayerInline,
+        WinnerInline,
+        SwagImageInline,
+        PlayImageInline,
+        PrizeImageInline,
     ]  # Add inline editor for "Best Painted" images
 
     def get_queryset(self, request):
