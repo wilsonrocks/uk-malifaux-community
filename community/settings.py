@@ -29,7 +29,9 @@ SECRET_KEY = "django-insecure-lo-e(@-2o2z-!md_62x&j4zf13n@zv$jee)3b^_gr#iop+mo=l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "uk-malifaux-community.onrender.com"
+]  # TODO can this be in an env var?
 
 
 # Application definition
