@@ -1,0 +1,16 @@
+{% extends "website/base.html" %} {% block content %}
+<table>
+  <tbody>
+    {% regroup object_list by date as events_by_date %}
+    {% for group in events_by_date %}
+    <h5 class="ml-2 font-bold">{{ group.grouper }}</h5>
+    {% for event in group.list %}
+    <p>{{ event.name }}</p>
+    {% empty %} NOTHING HERE 1
+    {% endfor %}
+    {% empty %} NOTHING HERE 2
+
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

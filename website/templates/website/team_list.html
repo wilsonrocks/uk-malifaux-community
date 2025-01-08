@@ -1,0 +1,7 @@
+{% extends 'website/base.html'%} {% block content %}
+<h2>Teams</h2>
+<ul>
+  {% for team in object_list %} {{team.name}} led by {{team.captain.first_name}}
+  {{team.captain.last_name}} {% endfor %}
+</ul>
+{% endblock %}

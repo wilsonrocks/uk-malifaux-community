@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  a {
+    @apply text-sky-300 hover:text-red-300 hover:underline transition-colors;
+  }
+}
