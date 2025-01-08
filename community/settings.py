@@ -29,9 +29,7 @@ SECRET_KEY = "django-insecure-lo-e(@-2o2z-!md_62x&j4zf13n@zv$jee)3b^_gr#iop+mo=l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "uk-malifaux-community.onrender.com"
-]  # TODO can this be in an env var?
+ALLOWED_HOSTS = [environ["HOSTNAME"]]  # TODO can this be in an env var?
 
 
 # Application definition
@@ -84,13 +82,27 @@ WSGI_APPLICATION = "community.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
+DATABASES = DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": environ["DB_NAME"],
+        "USER": environ["DB_USER"],
+        "PASSWORD": environ["DB_PASSWORD"],
+        "HOST": environ["DB_HOST"],
+        "PORT": environ["DB_PORT"],
+        "OPTIONS": {
+            "charset": "utf8mb4",
+        },
     }
 }
 
+
+# Add SSL configuration only if DB_SSL_CA is set
+db_ssl_ca = environ.get("DB_SSL_CA")  # Path to CA file
+if db_ssl_ca:
+    DATABASES["default"]["OPTIONS"]["ssl"] = {
+        "ca": db_ssl_ca,
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
