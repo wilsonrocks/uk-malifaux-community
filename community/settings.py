@@ -27,11 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-lo-e(@-2o2z-!md_62x&j4zf13n@zv$jee)3b^_gr#iop+mo=l"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = [environ["HOSTNAME"]]  # TODO can this be in an env var?
-
-
+DEBUG = getattr(environ, "DEBUG", None) != None
+breakpoint()
 # Application definition
 
 INSTALLED_APPS = [
