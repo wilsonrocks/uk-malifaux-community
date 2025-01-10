@@ -17,7 +17,9 @@ def cloudinary_responsive_image(public_id, width=None):
         "quality": "auto",
         "fetch_format": "auto",
     }
-    return cloudinary.CloudinaryImage(public_id).build_url(**transformations)
+    return cloudinary.CloudinaryImage(public_id).build_url(
+        **transformations, secure=True
+    )
 
 
 @register.simple_tag
@@ -30,4 +32,6 @@ def cloudinary_thumbnail(public_id, size):
         "quality": "auto",
         "fetch_format": "auto",
     }
-    return cloudinary.CloudinaryImage(public_id).build_url(**transformations)
+    return cloudinary.CloudinaryImage(public_id).build_url(
+        **transformations, secure=True
+    )
