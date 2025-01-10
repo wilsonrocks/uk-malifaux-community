@@ -10,11 +10,15 @@
     {% tailwind_css %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UK Malifaux Community</title>
+    <title>
+      {% block tab_title %}
+        UK Malifaux Community
+      {% endblock tab_title %}
+    </title>
   </head>
   <body class="font-dosis bg-zinc-800 text-zinc-50">
     <div class="w-full p-2 md:p-0 md:mx-auto max-w-lg">
-      <h1 class="ml-2">
+      <h1>
         <a class="text-4xl font-bold no-underline text-zinc-50"
            href="{% url 'home_page' %}">UK Malifaux Community</a>
       </h1>
@@ -23,6 +27,10 @@
         <a href="{% url 'team_list' %}">Teams</a>
         <a href="{% url 'venue_list' %}">Venues</a>
       </nav>
+      <h2 class="text-xl font-bold">
+        {% block page_title %}
+        {% endblock page_title %}
+      </h2>
       <section>
         {% block content %}
         {% endblock content %}

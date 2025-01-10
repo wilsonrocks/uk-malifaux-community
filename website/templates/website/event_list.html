@@ -1,16 +1,24 @@
-{% extends "website/base.html" %} {% block content %}
-<table>
-  <tbody>
-    {% regroup object_list by date as events_by_date %}
-    {% for group in events_by_date %}
-    <h5 class="ml-2 font-bold">{{ group.grouper }}</h5>
-    {% for event in group.list %}
-    <p>{{ event.name }}</p>
-    {% empty %} NOTHING HERE 1
-    {% endfor %}
-    {% empty %} NOTHING HERE 2
-
-    {% endfor %}
-  </tbody>
-</table>
+{% extends "website/base.html" %}
+{% block tab_title %}
+  Malifaux Events
+{% endblock tab_title %}
+{% block page_title %}
+  Events
+{% endblock page_title %}
+{% block content %}
+  <table>
+    <tbody>
+      {% regroup object_list by date as events_by_date %}
+      {% for group in events_by_date %}
+        <h5 class="ml-2 font-bold">{{ group.grouper }}</h5>
+        {% for event in group.list %}
+          <p>
+            <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
+          </p>
+        {% empty %} NOTHING HERE 1
+        {% endfor %}
+      {% empty %} NOTHING HERE 2
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock content %}

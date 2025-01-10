@@ -1,19 +1,25 @@
 {% extends "website/base.html" %}
 {% load cloudinary_tags %}
+{% block tab_title %}
+  {{ event.name }}
+{% endblock tab_title %}
+{% block page_title %}
+  {{ event.name }} at {{ event.venue.name }} - {{ event.date }}
+{% endblock page_title %}
 {% block content %}
   <section>
-    <h2>{{ object.name }} - {{ object.venue.name }}</h2>
+    <h2>{{ event.name }} - {{ event.venue.name }}</h2>
     <p>
-      organised by {{ object.tournament_organiser.first_name }}
-      {{ object.tournament_organiser.last_name }}
+      organised by {{ event.tournament_organiser.first_name }}
+      {{ event.tournament_organiser.last_name }}
     </p>
-    {{ object.description | safe }}
+    {{ event.description | safe }}
   </section>
-  {% if object.best_painted_images %}
+  {% if event.best_painted_images %}
     <section>
       <h3 class="text-red-300">Best Painted</h3>
       <div class="grid grid-cols-[repeat(auto-fit,_200px)] justify-center gap-4">
-        {% for best_painted_image in object.best_painted_images.all %}
+        {% for best_painted_image in event.best_painted_images.all %}
           <img data-thumbnail
                src="{% cloudinary_thumbnail best_painted_image.image.public_id size=200 %}"
                alt="{{ best_painted_image.title }}"
