@@ -45,9 +45,11 @@ INSTALLED_APPS = [
     "tinymce",
     "tailwind",
     "theme",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -71,6 +73,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "website.context_processors.page_content_context",
             ],
         },
     },
@@ -156,7 +159,7 @@ if (
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TAILWIND_APP_NAME = "theme"
-INTERNAL_PS = ["127.0.0.1"]
+INTERNAL_IPS = ["127.0.0.1"]
 
 
 # settings.py

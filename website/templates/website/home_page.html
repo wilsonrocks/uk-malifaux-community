@@ -1,32 +1,23 @@
 {% extends 'website/base.html' %}
 {% block content %}
-{{events.count}}
-      <a href="{% url 'event_list' %}">events</a> in the system!
-
-      <ol>
-        {% for event in events %}
-        <li>{{event.name}}</li>
-        {% endfor %}
-      </ol>
-    </section>
-
-    <section>
-      {{teams.count}} teams in the system!
-
-      <ol>
-        {% for team in teams %}
-        <li>{{team.name}}</li>
-        {% endfor %}
-      </ol>
-    </section>
-
-    <section>
-      {{venues.count}} venues in the system!
-
-      <ol>
-        {% for venue in venues %}
-        <li>{{venue.name}}</li>
-        {% endfor %}
-      </ol>
-    </section>
- {% endblock %}
+  {{ page_content.html | safe }}
+  {{ page.page_title }}
+  {{ events.count }}
+  <a href="{% url 'event_list' %}">events</a> in the system!
+  <ol>
+    {% for event in events %}<li>{{ event.name }}</li>{% endfor %}
+  </ol>
+</section>
+<section>
+  {{ teams.count }} teams in the system!
+  <ol>
+    {% for team in teams %}<li>{{ team.name }}</li>{% endfor %}
+  </ol>
+</section>
+<section>
+  {{ venues.count }} venues in the system!
+  <ol>
+    {% for venue in venues %}<li>{{ venue.name }}</li>{% endfor %}
+  </ol>
+</section>
+{% endblock %}
