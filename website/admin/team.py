@@ -1,8 +1,9 @@
 from django.contrib import admin
 from website.models import Team
 
+
 class TeamAdmin(admin.ModelAdmin):
-    exclude = ["captain"]
+    readonly_fields = ["captain"]
 
     def get_queryset(self, request):
         query_set = super().get_queryset(request)
@@ -14,5 +15,6 @@ class TeamAdmin(admin.ModelAdmin):
         if not obj.pk:  # Only set created_by on new objects
             obj.captain = request.user
         super().save_model(request, obj, form, change)
+
 
 admin.site.register(Team, TeamAdmin)

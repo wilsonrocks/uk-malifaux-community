@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
       {% block tab_title %}
-        UK Malifaux Community
+        {{ page.title|default:"UK Malifaux Community" }}
       {% endblock tab_title %}
     </title>
   </head>
@@ -29,6 +29,7 @@
       </nav>
       <h2 class="text-xl font-bold">
         {% block page_title %}
+          {{ page.title }}
         {% endblock page_title %}
       </h2>
       <section>

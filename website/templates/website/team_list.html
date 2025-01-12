@@ -1,17 +1,26 @@
-{% extends 'website/base.html' %}
-{% block tab_title %}
-  Malifaux Teams
-{% endblock tab_title %}
-{% block page_title %}
-  Teams
-{% endblock page_title %}
+{% extends "website/base.html" %}
 {% block content %}
-  <ul>
-    {% for team in object_list %}
-      {{ team.name }} led by {{ team.captain.first_name }}
-      {{ team.captain.last_name }}
-    {% empty %}
-      no teams yet!
-    {% endfor %}
-  </ul>
-{% endblock %}
+  {{ page_content.definition | safe }}
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for team in team_list %}
+        <tr>
+          <td>
+            <a href={% url 'team_detail' team.id %}>{{ team.name }}</a>
+          </td>
+          <td>{{ team.usual_venue.city }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td>no teams yet!</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock content %}

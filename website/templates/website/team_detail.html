@@ -1,0 +1,7 @@
+{% extends "website/base.html" %}
+{% block page_title %}
+    {{ team.name }}
+{% endblock page_title %}
+{% block content %}
+    {{ team.description | safe }}
+{% endblock content %}

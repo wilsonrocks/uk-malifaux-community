@@ -8,9 +8,8 @@ from .mixins import ImagePreviewMixin
 class Page(models.Model, ImagePreviewMixin):
 
     page_name = models.CharField(max_length=30, blank=False, unique=True)
-    tab_title = models.CharField(max_length=30)
-    page_title = models.CharField(max_length=30)
-    description = models.CharField(max_length=30)
+    title = models.CharField(max_length=50)
+    description = models.CharField(max_length=500)
 
     def __str__(self):
         return self.page_name
