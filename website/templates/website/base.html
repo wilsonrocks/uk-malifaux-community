@@ -17,17 +17,16 @@
     </title>
   </head>
   <body class="font-dosis bg-zinc-800 text-zinc-50">
-    <div class="w-full p-2 md:p-0 md:mx-auto max-w-lg">
+    <div class="w-full p-2 lg:p-0 lg:mx-auto max-w-xl">
       <h1>
-        <a class="text-4xl font-bold no-underline text-zinc-50"
-           href="{% url 'home_page' %}">UK Malifaux Community</a>
+        <a class=" text-zinc-50" href="{% url 'home_page' %}">UK Malifaux Community</a>
       </h1>
       <nav class="flex gap-1 justify-end">
         <a href="{% url 'event_list' %}">Events</a>
         <a href="{% url 'team_list' %}">Teams</a>
         <a href="{% url 'venue_list' %}">Venues</a>
       </nav>
-      <h2 class="text-xl font-bold">
+      <h2>
         {% block page_title %}
           {{ page.title }}
         {% endblock page_title %}

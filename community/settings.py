@@ -185,3 +185,12 @@ JAZZMIN_SETTINGS = {
     # Logo to use for login form in dark themes (defaults to login_logo)
     "login_logo_dark": None,
 }
+
+
+TINYMCE_DEFAULT_CONFIG = {
+    "menubar": "insert",  # Show the Insert menu
+    "plugins": "link code",  # Enable the link plugin and code editor
+    "toolbar": "undo redo | bold italic underline | link | code",  # Add link and code buttons to the toolbar
+    "relative_urls": False,  # Use absolute URLs for links
+    "remove_script_host": False,  # Include host in URLs
+}

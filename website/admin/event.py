@@ -78,6 +78,9 @@ class EventAdmin(admin.ModelAdmin):
                 "fields": [
                     "name",
                     "date",
+                    "days",
+                    "rounds",
+                    "ruleset",
                     "max_spaces",
                     "paid_players",
                     "spaces_available",

@@ -6,4 +6,32 @@
   a {
     @apply text-sky-300 hover:text-red-300 hover:underline transition-colors;
   }
+
+  h1 {
+    @apply text-4xl font-bold text-red-300 mb-6;
+  }
+
+  h2 {
+    @apply text-3xl font-semibold text-red-300 mb-5;
+  }
+
+  h3 {
+    @apply text-2xl font-medium text-red-300 mb-4;
+  }
+
+  h4 {
+    @apply text-xl font-medium text-red-300 mb-3;
+  }
+
+  h5 {
+    @apply text-lg font-medium text-red-300 mb-2;
+  }
+
+  h6 {
+    @apply text-base font-medium text-red-300 mb-1;
+  }
+
+  section {
+    @apply mb-3;
+  }
 }

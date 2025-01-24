@@ -8,10 +8,16 @@
       {% regroup object_list by date as events_by_date %}
       {% for group in events_by_date %}
         <h5 class="ml-2 font-bold">{{ group.grouper }}</h5>
-        {% for event in group.list %}
-          <p>
-            <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
-          </p>
+        <dl>
+          {% for event in group.list %}
+            <dt>
+              <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a> - {{ event.venue.name }}, {{ event.venue.city }}
+            </dt>
+            <dd>
+              {{ event.rounds }} rounds of {{ event.ruleset }}
+              {% if event.days > 1 %}over {{ event.days }} days{% endif %}
+            </dd>
+          </dl>
         {% empty %} NOTHING HERE 1
         {% endfor %}
       {% empty %} NOTHING HERE 2
