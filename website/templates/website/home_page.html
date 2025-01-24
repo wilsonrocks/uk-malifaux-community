@@ -9,16 +9,15 @@
       <h3>
         <a href="{% url 'event_list' %}">{{ page_content.events_section_heading | safe }}</a>
       </h3>
-      {{ page_content.events_section_explanation | safe }}
+      <div class="mb-4">{{ page_content.events_section_explanation | safe }}</div>
       {% for event in events %}
-        <div class="mb-8">
-          <h4>
+        <div class="mb-4 grid grid-cols-3 gap-4">
+          <span>
             <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
-          </h4>
-          <p>{{ event.date }} {{ event.venue.city }}</p>
-          <p>{{ event.description | safe }}</p>
+          </span>
+          <span>{{ event.date }}</span>
+          <span>{{ event.venue.name }} - {{ event.venue.city }}</span>
         </div>
-        <hr />
       {% endfor %}
     </section>
     <section>

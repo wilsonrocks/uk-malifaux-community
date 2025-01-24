@@ -80,7 +80,7 @@ class EventAdmin(admin.ModelAdmin):
                     "date",
                     "days",
                     "rounds",
-                    "ruleset",
+                    "variant",
                     "max_spaces",
                     "paid_players",
                     "spaces_available",

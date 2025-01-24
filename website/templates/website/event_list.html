@@ -1,27 +1,24 @@
 {% extends "website/base.html" %}
-{% comment %} {% block tab_title %}
-  {{ page.title }}
-{% endblock tab_title %} {% endcomment %}
 {% block content %}
-  <table>
-    <tbody>
-      {% regroup object_list by date as events_by_date %}
-      {% for group in events_by_date %}
-        <h5 class="ml-2 font-bold">{{ group.grouper }}</h5>
-        <dl>
-          {% for event in group.list %}
-            <dt>
-              <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a> - {{ event.venue.name }}, {{ event.venue.city }}
-            </dt>
-            <dd>
-              {{ event.rounds }} rounds of {{ event.ruleset }}
-              {% if event.days > 1 %}over {{ event.days }} days{% endif %}
-            </dd>
-          </dl>
-        {% empty %} NOTHING HERE 1
-        {% endfor %}
-      {% empty %} NOTHING HERE 2
+  <div class="mb-4">{{ page_content.description | safe }}</div>
+  {% regroup object_list by month as events_by_month %}
+  {% for group in events_by_month %}
+    <div class="mb-4">
+      <h5 class=" font-bold">{{ group.grouper }}</h5>
+      <div class="mb-4">
+        {% for event in group.list %}
+          <div>
+            <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a> - {{ event.venue.name }}, {{ event.venue.city }}
+          </div>
+          <div>{{ event.short_description }}</div>
+          {% if event.max_spaces %}
+            <div>
+              {{ event.max_spaces }} player maximum.
+            {% endif %}
+          </div>
+        </div>
+      {% empty %} No events
       {% endfor %}
-    </tbody>
-  </table>
-{% endblock content %}
+    {% empty %} No months
+    {% endfor %}
+  {% endblock content %}

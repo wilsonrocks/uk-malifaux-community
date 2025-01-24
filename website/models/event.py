@@ -19,7 +19,7 @@ class Event(models.Model):
     max_spaces = models.IntegerField()
     rounds = models.IntegerField(default=3)
     days = models.IntegerField(default=1)
-    ruleset = models.TextField(
+    variant = models.TextField(
         blank=False,
         max_length=100,
         default="GG4, Singles",
@@ -48,8 +48,30 @@ class Event(models.Model):
     def signed_up_players(self):
         return len(self.players.count())
 
+    @property
+    def month(self):
+        # Use the date to get the full month name and year
+        return self.date.strftime("%B %Y")  # Example: "January 2025"
+
+    @property
+    def short_description(self):
+        output = []
+        if self.rounds:
+            output.append(f"{self.rounds} rounds of")
+
+        if self.variant:
+            output.append(self.variant)
+
+        if self.days > 1:
+            output.append(f"over {self.days} days")
+
+        return " ".join(output)
+
     # Best Painted
     # best_painted_images - one to many
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ["date"]
