@@ -1,24 +1,25 @@
 {% extends "website/base.html" %}
-{% block tab_title %}
-  Malifaux Events
-{% endblock tab_title %}
-{% block page_title %}
-  Events
-{% endblock page_title %}
 {% block content %}
-  <table>
-    <tbody>
-      {% regroup object_list by date as events_by_date %}
-      {% for group in events_by_date %}
-        <h5 class="ml-2 font-bold">{{ group.grouper }}</h5>
+  <div class="mb-4">{{ page_content.description | safe }}</div>
+  {% regroup object_list by month as events_by_month %}
+  {% for group in events_by_month %}
+    <div class="mb-4">
+      <h5 class=" font-bold">{{ group.grouper }}</h5>
+      <div class="mb-4">
         {% for event in group.list %}
-          <p>
-            <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
-          </p>
-        {% empty %} NOTHING HERE 1
-        {% endfor %}
-      {% empty %} NOTHING HERE 2
+          <div>
+            <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a> - {{ event.venue.name }}, {{ event.venue.city }}
+          </div>
+          <div>{{ event.short_description }}</div>
+          {% if event.max_spaces %}
+            <div>
+              {{ event.max_spaces }} player maximum.
+            {% endif %}
+          </div>
+        </div>
+      {% empty %} No events
       {% endfor %}
-    </tbody>
-  </table>
+    {% empty %} No months
+    </div>
+  {% endfor %}
 {% endblock content %}

@@ -1,32 +1,35 @@
 {% extends 'website/base.html' %}
+{% load cloudinary_tags %}
 {% block content %}
-{{events.count}}
-      <a href="{% url 'event_list' %}">events</a> in the system!
-
-      <ol>
-        {% for event in events %}
-        <li>{{event.name}}</li>
-        {% endfor %}
-      </ol>
-    </section>
-
+  <section>
+    {{ page_content.introduction | safe }}
+  </section>
+  <div>
     <section>
-      {{teams.count}} teams in the system!
-
-      <ol>
-        {% for team in teams %}
-        <li>{{team.name}}</li>
-        {% endfor %}
-      </ol>
+      <h3>
+        <a href="{% url 'event_list' %}">{{ page_content.events_section_heading | safe }}</a>
+      </h3>
+      <div class="mb-4">{{ page_content.events_section_explanation | safe }}</div>
+      {% for event in events %}
+        <div class="mb-4 grid grid-cols-3 gap-4">
+          <span>
+            <a href="{% url 'event_detail' event.id %}">{{ event.name }}</a>
+          </span>
+          <span>{{ event.date }}</span>
+          <span>{{ event.venue.name }} - {{ event.venue.city }}</span>
+        </div>
+      {% endfor %}
     </section>
-
     <section>
-      {{venues.count}} venues in the system!
-
-      <ol>
-        {% for venue in venues %}
-        <li>{{venue.name}}</li>
-        {% endfor %}
-      </ol>
+      <h3>
+        <a href="{% url 'team_list' %}">{{ page_content.teams_section_heading | safe }}</a>
+      </h3>
+      {{ page_content.teams_section_explanation | safe }}
+      {% for team in teams %}
+        <div>
+          <a href="{% url 'team_detail' team.id %}">{{ team.name }}</a> - {{ team.usual_venue.city }}
+        </div>
+      {% endfor %}
     </section>
- {% endblock %}
+  </div>
+{% endblock %}

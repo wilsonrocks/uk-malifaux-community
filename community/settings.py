@@ -42,12 +42,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "website.apps.WebsiteConfig",
+    "django_cotton",
     "tinymce",
     "tailwind",
     "theme",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -71,6 +74,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "website.context_processors.page_content_context",
             ],
         },
     },
@@ -156,7 +160,7 @@ if (
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TAILWIND_APP_NAME = "theme"
-INTERNAL_PS = ["127.0.0.1"]
+INTERNAL_IPS = ["127.0.0.1"]
 
 
 # settings.py
@@ -181,4 +185,13 @@ JAZZMIN_SETTINGS = {
     "login_logo": None,
     # Logo to use for login form in dark themes (defaults to login_logo)
     "login_logo_dark": None,
+}
+
+
+TINYMCE_DEFAULT_CONFIG = {
+    "menubar": "insert",  # Show the Insert menu
+    "plugins": "link code",  # Enable the link plugin and code editor
+    "toolbar": "undo redo | bold italic underline | link | code",  # Add link and code buttons to the toolbar
+    "relative_urls": False,  # Use absolute URLs for links
+    "remove_script_host": False,  # Include host in URLs
 }

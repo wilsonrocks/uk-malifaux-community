@@ -1,5 +1,6 @@
 from django import template
 import cloudinary
+import json
 
 register = template.Library()
 
@@ -35,3 +36,8 @@ def cloudinary_thumbnail(public_id, size):
     return cloudinary.CloudinaryImage(public_id).build_url(
         **transformations, secure=True
     )
+
+
+@register.simple_tag
+def responsive_image(public_id):
+    return f"<em>{public_id}</em>"

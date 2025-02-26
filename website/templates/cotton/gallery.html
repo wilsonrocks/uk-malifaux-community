@@ -1,0 +1,27 @@
+{% load cloudinary_tags %}
+{% if images %}
+    <section id="{{ gallery_name }}-gallery">
+        <h3 class="text-red-300">{{ title }}</h3>
+        <div class="grid grid-cols-[repeat(auto-fit,_200px)] justify-center gap-4">
+            {% for image in images %}
+                <a href="#{{ image.image.public_id }}"
+                   data-lightbox-url="{{ image.image.url }}"
+                   data-public-id="{{ image.image.public_id }}">
+                    <img data-thumbnail
+                         src="{% cloudinary_thumbnail image.image.public_id size=200 %}"
+                         alt="{{ image.title }}"
+                         sizes="(max-width: 600px) 480px,
+                                (max-width: 1200px) 800px,
+                                1600px"
+                         srcset="{% cloudinary_thumbnail image.image.public_id size=480 %} 480w,
+                                 {% cloudinary_thumbnail image.image.public_id size=800 %} 800w,
+                                 {% cloudinary_thumbnail image.image.public_id size=1600 %} 1600w"
+                         width="200"
+                         height="200"
+                         class="rounded-md cursor-pointer" />
+                </img>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
