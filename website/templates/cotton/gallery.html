@@ -1,63 +1,27 @@
 {% load cloudinary_tags %}
-<h3 class="text-red-300">{{ title }}</h3>
-<div class="grid grid-cols-[repeat(auto-fit,_200px)] justify-center gap-4">
-    {% for image in images %}
-        <a href="#{{ image.image.public_id }}">
-            <img data-thumbnail
-                 src="{% cloudinary_thumbnail image.image.public_id size=200 %}"
-                 alt="{{ image.title }}"
-                 sizes="(max-width: 600px) 480px,
-                        (max-width: 1200px) 800px,
-                        1600px"
-                 srcset="{% cloudinary_thumbnail image.image.public_id size=480 %} 480w,
-                         {% cloudinary_thumbnail image.image.public_id size=800 %} 800w,
-                         {% cloudinary_thumbnail image.image.public_id size=1600 %} 1600w"
-                 width="200"
-                 height="200"
-                 class="rounded-md cursor-pointer" />
-        </img>
-    </a>
-{% endfor %}
-</div>
-<div id="lightbox"
-     class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center hidden">
-    <button id="{{ gallery_name }}-close-button"
-            href="#"
-            class="absolute top-4 right-4 text-white text-xl">✖</button>
-    <img id="lightbox-image"
-         src="{{ image.image.url }}"
-         alt="{{ image.title }}"
-         class="max-w-full max-h-full rounded-md bg-black" />
-</div>
-{{ images | image_list_json | json_script:gallery_name }}
-<script>
-const images = JSON.parse(document.getElementById('{{gallery_name}}').textContent)
-const lightbox = document.querySelector('#lightbox');
-
-function setImage (id) {
-    if (id && id.length){
-        lightbox.querySelector('img').src=images[id]
-        lightbox.classList.remove('hidden')
-    }
-}
-
-const closeButton = document.getElementById('{{gallery_name}}-close-button')
-closeButton.addEventListener('click', ()=>{
-    lightbox.classList.add('hidden')
-    history.replaceState(null, null,'#');
-      
-})
-
-window.addEventListener('hashchange', (event) => {
-    const [_,id] = event.newURL.split('#')
-    setImage(id)
-  });
-
-  window.addEventListener('load', ()=>{
-    debugger
-    const id = window.location.hash.slice(1); // Remove the '#' from the hash
-    if (id && id.length) {
-      setImage(id)
-    }
-  })
-</script>
+{% if images %}
+    <section id="{{ gallery_name }}-gallery">
+        <h3 class="text-red-300">{{ title }}</h3>
+        <div class="grid grid-cols-[repeat(auto-fit,_200px)] justify-center gap-4">
+            {% for image in images %}
+                <a href="#{{ image.image.public_id }}"
+                   data-lightbox-url="{{ image.image.url }}"
+                   data-public-id="{{ image.image.public_id }}">
+                    <img data-thumbnail
+                         src="{% cloudinary_thumbnail image.image.public_id size=200 %}"
+                         alt="{{ image.title }}"
+                         sizes="(max-width: 600px) 480px,
+                                (max-width: 1200px) 800px,
+                                1600px"
+                         srcset="{% cloudinary_thumbnail image.image.public_id size=480 %} 480w,
+                                 {% cloudinary_thumbnail image.image.public_id size=800 %} 800w,
+                                 {% cloudinary_thumbnail image.image.public_id size=1600 %} 1600w"
+                         width="200"
+                         height="200"
+                         class="rounded-md cursor-pointer" />
+                </img>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
