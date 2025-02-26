@@ -20,44 +20,7 @@
   </p>
   {{ event.description | safe }}
   {% if event.best_painted_images %}
-    <h3 class="text-red-300">Best Painted</h3>
-    <div class="grid grid-cols-[repeat(auto-fit,_200px)] justify-center gap-4">
-      {% for best_painted_image in event.best_painted_images.all %}
-        <img data-thumbnail
-             src="{% cloudinary_thumbnail best_painted_image.image.public_id size=200 %}"
-             alt="{{ best_painted_image.title }}"
-             sizes="(max-width: 600px) 480px,
-                    (max-width: 1200px) 800px,
-                    1600px"
-             srcset="{% cloudinary_thumbnail best_painted_image.image.public_id size=480 %} 480w,
-                     {% cloudinary_thumbnail best_painted_image.image.public_id size=800 %} 800w,
-                     {% cloudinary_thumbnail best_painted_image.image.public_id size=1600 %} 1600w"
-             width="200"
-             height="200"
-             class="rounded-md cursor-pointer" />
-        <div data-lightbox
-             data-public-id="{{ best_painted_image.image.public_id }}"
-             class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center hidden">
-          <button class="absolute top-4 right-4 text-white text-xl">✖</button>
-          <img id="lightbox-image"
-               src="{{ best_painted_image.image.url }}"
-               alt="{{ best_painted_image.title }}"
-               class="max-w-full max-h-full rounded-md bg-black" />
-        </div>
-      {% endfor %}
-    </div>
-    <script>
-  document.querySelectorAll("[data-lightbox] button").forEach((button) => {
-    button.addEventListener("click", function closeLightbox(event) {
-      event.target.parentElement.classList.add("hidden");
-    });
-  });
-
-  document.querySelectorAll("[data-thumbnail]").forEach((img) => {
-    img.addEventListener("click", function openLightbox(event) {
-      event.target.nextElementSibling.classList.remove("hidden");
-    });
-  });
-    </script>
+    <c-gallery title="Best Painted" :images="event.best_painted_images.all" gallery_name="best_painted" />
   {% endif %}
+  <c-lightbox :image="best_painted_image" }}/>
 {% endblock content %}

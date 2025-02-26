@@ -1,5 +1,6 @@
 from django import template
 import cloudinary
+import json
 
 register = template.Library()
 
@@ -40,3 +41,9 @@ def cloudinary_thumbnail(public_id, size):
 @register.simple_tag
 def responsive_image(public_id):
     return f"<em>{public_id}</em>"
+
+
+@register.filter(name="image_list_json")
+def to_json(image_queryset):
+    """Convert a queryset of Cloudinary images to a JSON string."""
+    return {x.image.public_id: x.image.url for x in image_queryset}
