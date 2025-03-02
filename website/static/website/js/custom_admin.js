@@ -1,8 +1,8 @@
 function addFilePreviewListener(fileInput) {
   fileInput.addEventListener("change", (event) => {
     blobUrl = URL.createObjectURL(event.target.files[0]);
-    fileInput.closest("fieldset").querySelector(".field-file_preview img").src =
-      blobUrl;
+    const previewImage = fileInput.closest(".card-body").querySelector("img");
+    previewImage.src = blobUrl;
   });
 }
 
