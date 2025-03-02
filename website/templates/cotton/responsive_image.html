@@ -1,0 +1,16 @@
+{% load cloudinary_tags %}
+<img class="max-w-7xl max-h-dvh"
+        sizes="(max-width: 300px)  300px,
+        (max-width: 500px)  500px,
+        (max-width: 700px)  700px,
+        (max-width: 900px)  900px,
+        (max-width: 1100px)  1100px,
+        (max-width: 1200px) 1200px
+        1280px"
+        srcset="{% cloudinary_responsive_image public_id width=300 %} 300w,
+        {% cloudinary_responsive_image public_id width=500 %} 500w,
+        {% cloudinary_responsive_image public_id width=700 %} 700w,
+        {% cloudinary_responsive_image public_id width=900 %} 900w,
+        {% cloudinary_responsive_image public_id width=1100 %} 1100w",
+        {% cloudinary_responsive_image public_id width=1280 %} 1280w"
+        alt="{{ alt }}" />

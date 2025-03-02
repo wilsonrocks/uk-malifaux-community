@@ -23,5 +23,12 @@
   <c-gallery title="Prizes" :images="event.prize_images.all" gallery_name="prizes" />
   <c-gallery title="Swag" :images="event.swag_images.all" gallery_name="swag" />
   <c-gallery title="Play" :images="event.play_images.all" gallery_name="play" />
-  <c-lightbox />
+  <div id="lightbox"
+       class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center ">
+    <button id="lightbox-close-button"
+            href="#"
+            class="absolute top-4 right-4 text-white text-xl">✖</button>
+    <c-responsive_image alt="HELLO" public_id="{{ event.best_painted_images.all.0.image.public_id }}" />
+    <img class="max-w-full max-h-full rounded-md bg-black" />
+  </div>
 {% endblock content %}
