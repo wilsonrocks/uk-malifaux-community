@@ -2,26 +2,27 @@
  * Uses the lightbox to show the given public_id
  * */
 function setLightbox(id) {
-  const url = document
-    .querySelector(`[data-public-id=${id}]`)
-    .getAttribute("data-lightbox-url");
-  const lightbox = document.querySelector("#lightbox");
+  if (!id) return;
 
-  const img = lightbox.querySelector("img");
-  img.src = url;
+  const allLightboxes = document.querySelectorAll("[data-lightbox-public-id]");
 
-  // it's not as simple as just revealing it because we want to wait till it has loaded
-  if (img.complete) {
-    lightbox.classList.remove("hidden");
-  } else {
-    img.addEventListener(
-      "load",
-      () => {
-        lightbox.classList.remove("hidden");
-      },
-      { once: true }
-    );
+  for (const lightbox of allLightboxes) {
+    if (lightbox.getAttribute("data-lightbox-public-id") === id) {
+      lightbox.classList.remove("hidden");
+    } else {
+      lightbox.classList.add("hidden");
+    }
   }
+}
+
+function closeLightbox() {
+  const openLightboxes = document.querySelectorAll(
+    "[data-lightbox-public-id]:not(.hidden)"
+  );
+  for (const lightbox of openLightboxes) {
+    lightbox.classList.add("hidden");
+  }
+  history.pushState(null, null, "#");
 }
 
 window.addEventListener("hashchange", (event) => {
@@ -29,15 +30,17 @@ window.addEventListener("hashchange", (event) => {
   setLightbox(id);
 });
 
-const lightboxCloseButton = document.querySelector("#lightbox-close-button");
-lightboxCloseButton?.addEventListener("click", () => {
-  document.querySelector("#lightbox").classList.add("hidden");
-  history.pushState(null, null, "#");
-});
-
 window.addEventListener("load", () => {
   const id = window.location.hash.slice(1); // Remove the '#' from the hash
   if (id && id.length) {
-    setLightboxId(id);
+    setLightbox(id);
+  }
+
+  const lightboxCloseButtons = document.querySelectorAll(
+    "[data-lightbox-public-id]"
+  );
+
+  for (const lightbox of lightboxCloseButtons) {
+    lightbox.querySelector("button").addEventListener("click", closeLightbox);
   }
 });
